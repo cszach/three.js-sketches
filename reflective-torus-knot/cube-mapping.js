@@ -47,7 +47,7 @@ function init() {
 
 	// Set up the cube map
 
-	path = "../textures/cube-maps/Yokohama/";
+	path = "../assets/textures/cube-maps/Yokohama/";
 	format = ".jpg";
 	urls = [
 		path + "posx" + format,
