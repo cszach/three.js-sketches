@@ -4,8 +4,12 @@ import { OrbitControls } from "../libm/OrbitControls.js";
 
 var scene, camera, renderer, controls; // Scene, camera, renderer, and controls
 var path, format, urls, loader, reflectionCube, refractionCube; // Cube mapping
-var torusKnotGeometry, sphereGeometry, reflectiveMaterial, refractiveMaterial,
-torusKnot, sphere; // Meshes
+var torusKnotGeometry,
+	sphereGeometry,
+	reflectiveMaterial,
+	refractiveMaterial,
+	torusKnot,
+	sphere; // Meshes
 var ambient; // Light
 
 var aspect = window.innerWidth / window.innerHeight;
@@ -59,6 +63,7 @@ function init() {
 	];
 
 	loader = new THREE.CubeTextureLoader();
+
 	reflectionCube = loader.load( urls );
 	reflectionCube.mapping = THREE.CubeReflectionMapping;
 	reflectionCube.format = THREE.RGBFormat;
@@ -89,7 +94,7 @@ function init() {
 	torusKnotGeometry = new THREE.TorusKnotBufferGeometry( 3, 1.2, 120, 120 );
 	torusKnot = new THREE.Mesh( torusKnotGeometry, reflectiveMaterial );
 
-	sphereGeometry = new THREE.SphereGeometry( 5, 50, 50 );
+	sphereGeometry = new THREE.SphereBufferGeometry( 5, 50, 50 );
 	sphere = new THREE.Mesh( sphereGeometry, refractiveMaterial );
 
 	torusKnot.matrixAutoUpdate = sphere.matrixAutoUpdate = false;
@@ -104,7 +109,7 @@ function init() {
 
 	// Interaction
 
-	document.body.addEventListener( 'keypress', onKeyPress );
+	document.body.addEventListener( "keypress", onKeyPress );
 
 }
 
@@ -128,7 +133,7 @@ function onKeyPress( event ) {
 
 }
 
-function render( event ) {
+function render() {
 
 	requestAnimationFrame( render );
 	controls.update();

@@ -1,0 +1,35 @@
+{
+  "name": "three.js-sketches",
+  "description": "My three.js sketches",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/you-create/three.js-sketches.git"
+  },
+  "keywords": [
+    "three-js",
+    "sketches",
+    "fun",
+    "expressive"
+  ],
+  "author": "Nguyen Hoang Duong",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/you-create/three.js-sketches/issues"
+  },
+  "homepage": "https://github.com/you-create/three.js-sketches#readme",
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-mdcs": "^4.2.3",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
+  }
+}
