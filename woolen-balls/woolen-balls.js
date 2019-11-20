@@ -139,6 +139,10 @@ function init() {
 
 	scene.add( ambient, spotLight01, spotLight02 );
 
+	// Event listeners
+
+	window.addEventListener( "resize", onWindowResize );
+
 }
 
 function render() {
@@ -149,5 +153,13 @@ function render() {
 	camera.lookAt( balls.position );
 
 	renderer.render( scene, camera );
+
+}
+
+function onWindowResize() {
+
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize( window.innerWidth, window.innerHeight );
 
 }
