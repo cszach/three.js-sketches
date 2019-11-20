@@ -11,6 +11,7 @@ var torusKnotGeometry,
 	torusKnot,
 	sphere; // Meshes
 var ambient; // Light
+var info; // Information div
 
 var aspect = window.innerWidth / window.innerHeight;
 var canvas = document.createElement( "canvas" );
@@ -107,9 +108,16 @@ function init() {
 
 	scene.add( ambient );
 
-	// Interaction
+	// Event handlers
 
 	document.body.addEventListener( "keypress", onKeyPress );
+	window.addEventListener( "resize", onWindowResize );
+
+	// Informative overlay
+
+	info = document.createElement( "div" );
+	info.innerHTML = "Press space to toggle between meshes";
+	document.body.appendChild( info );
 
 }
 
@@ -138,5 +146,13 @@ function render() {
 	requestAnimationFrame( render );
 	controls.update();
 	renderer.render( scene, camera );
+
+}
+
+function onWindowResize() {
+
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize( window.innerWidth, window.innerHeight );
 
 }
