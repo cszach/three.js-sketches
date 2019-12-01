@@ -1,7 +1,7 @@
 # My three.js sketches
 
 These are my three.js sketches, which are made possible by
-[three.js](threejs.org). :art:
+[three.js](https://threejs.org). :art:
 
 The table below lists all of the sketches, most recent ones are placed first.
 Click on any thumbnail to jump right into a sketch. Click on the link under
