@@ -26,10 +26,9 @@ the thumbnail to see the sketch's source code. Enjoy! :lollipop:
     </tr>
 </table>
 
-## Directory structure
+## :open_file_folder: Directory structure
 
 - `README.md`: This document
-- `LICENSE`: The license for the code of the sketches (CC0)
 - `mktos.sh`: The Shell script that is used to generate the table above
 - `.gitignore`: Git ignores
 - `.editorconfig`: EditorConfig file
@@ -42,9 +41,16 @@ the thumbnail to see the sketch's source code. Enjoy! :lollipop:
 - `assets/`: Assets (including textures) used by the sketches
 - Every other directory: The sketches, each directory for one sketch
 
-## License
+## :page_with_curl: Copyright
 
-I give these sketches away. [Public domain](LICENSE).
+[no-lic]: https://choosealicense.com/no-permission/
 
-Note that the textures (found in `assets/`) are not mine and are licensed
-differently.
+Copyright :copyright: 2019 by Nguyen Hoang Duong (<you_create@protonmail.com>).
+
+One or more textures used in this project have been created with photographs
+from Textures.com. These photographs may not be redistributed by default;
+please visit www.textures.com for more information.
+
+Currently this project is not licensed. See [this page][no-lic] by GitHub to
+know what you are supposed to do. If you have a better license, please suggest
+(e.g. by opening a new issue).
