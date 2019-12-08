@@ -1,3 +1,23 @@
+/**
+ * creative-flower-pot: A three.js experiment by Nguyen Hoang Duong
+ *
+ * Idea originally from a creative flower pot I drew for one of my beloved
+ * teachers on Vietnamese Teachers' Day 2019.
+ *
+ * TODO:
+ *   o Implement animation for the flowers (moving & rotating) and the stems
+ *     (moving along with the flowers)
+ *   o Create a cooler default material for the stems
+ *   o Make a better material for the pot
+ *   o Add depth (thickness) to the pot
+ *
+ * FIXME:
+ *   o Flowers can potentially collide
+ *   o randomGeometry: force does not seem to work
+ *
+ * @author Nguyen Hoang Duong / https:github.com/you-create
+ */
+
 var scene, camera, renderer, controls; // Scene, camera, renderer, and controls
 var groundGeometry, groundMaterial, ground; // Ground
 var pot, potGeometry, potMaterial, transparentMaterial, potMaterials; // Pot
@@ -11,7 +31,6 @@ var boxFlower,
 	torusKnotFlower,
 	defaultFlowerMaterial,
 	defaultStemMaterial; // Geometries & materials for the flower and the stem
-var flower01; // Flowers
 var flowerPot; // Pot + Flowers + Stems (Object3D)
 var POTCENTER, FLOWERPOTCENTER, flowerPotCenter; // Centers
 var ambient, key, fill, back; // Lights
@@ -23,6 +42,7 @@ var canvas = document.createElement( "canvas" );
 var context = canvas.getContext( "webgl2", { alpha: false } );
 
 var floatMemory; // Helper for randomFloat (implemented below)
+var geometryMemory; // Helper for randomGeometry (implemented below)
 
 /**
  * Return a random float in a given range defined by the minumum and maximum
@@ -53,25 +73,38 @@ function randomFloat( min, max, force = true, difference = 1.5 ) {
 }
 
 /**
- * Replace every value in this Vector3 with its absolute value.
+ * Obtain a geometry randomly from an array containing many geometries
+ *
+ * @param {array} geometries An array of three.js geometries
+ * @param {boolean} force Set to true if having the same geometry returned at
+ * least twice in a row is undesired
+ * @param {boolean} clone Set to true to get the clone of the geometry and not
+ * the geometry itself
+ * @return {Geometry,BufferGeometry} A geometry randomly picked from the array
  */
-THREE.Vector3.prototype.abs = function () {
+function randomGeometry( geometries, force = true, clone = true ) {
 
-	return new THREE.Vector3(
-		Math.abs( this.x ),
-		Math.abs( this.y ),
-		Math.abs( this.z )
-	);
+	let result = geometries[ Math.floor( Math.random() * geometries.length ) ];
 
-};
+	while ( force && result.uuid === geometryMemory ) {
+
+		randomGeometry( geometries, force, clone );
+
+	}
+
+	geometryMemory = result.uuid;
+
+	return clone ? result.clone() : result;
+
+}
 
 /**
  * Object3D's extension: Get the coordinate of the center of the object
  * Returns a Vector3
  */
-THREE.Object3D.prototype.getCenter = function () {
+THREE.Object3D.prototype.getCenter = function ( target ) {
 
-	return new THREE.Box3().setFromObject( this ).getCenter();
+	return new THREE.Box3().setFromObject( this ).getCenter( target );
 
 };
 
@@ -292,21 +325,33 @@ function init() {
 	torusFlower = new THREE.TorusBufferGeometry( 0.75, 0.2, 50, 4 );
 	torusKnotFlower = new THREE.TorusKnotBufferGeometry( 0.5, 0.2, 120, 100 );
 
+	let flowerGeometries = [
+		boxFlower,
+		cylinderFlower,
+		dodecahedronFlower,
+		icosahedronFlower,
+		octahedronFlower,
+		sphereFlower,
+		torusFlower,
+		torusKnotFlower
+	];
+
 	defaultFlowerMaterial = new THREE.MeshLambertMaterial();
 	defaultStemMaterial = new THREE.MeshLambertMaterial( {
 		side: THREE.DoubleSide
 	} );
 
-	flowerPot.add( new FlowerWithStem( torusKnotFlower ) );
-	flowerPot.add( new FlowerWithStem( dodecahedronFlower ) );
-	flowerPot.add( new FlowerWithStem( sphereFlower ) );
-	flowerPot.add( new FlowerWithStem( icosahedronFlower ) );
-	flowerPot.add( new FlowerWithStem( torusFlower ) );
+	for ( let i = 0; i < 5; i ++ ) {
+
+		flowerPot.add( new FlowerWithStem( randomGeometry( flowerGeometries ) ) );
+
+	}
 
 	// Add the flower pot and an Object3D at its center to the scene
 	// flowerPotCenter - the Object3D at the flower pot's center - will be
 	// repositioned in the render function
 
+	FLOWERPOTCENTER = new THREE.Vector3();
 	flowerPotCenter = new THREE.Object3D();
 	scene.add( flowerPot, flowerPotCenter );
 
@@ -363,7 +408,7 @@ function render( event ) {
 
 	// Compute the center of the flower pot
 
-	FLOWERPOTCENTER = flowerPot.getCenter(); // Vector3
+	flowerPot.getCenter( FLOWERPOTCENTER ); // Vector3
 	flowerPotCenter.position.set( ...FLOWERPOTCENTER.toArray() );
 
 	key.target = fill.target = back.target = flowerPotCenter;
