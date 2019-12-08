@@ -9,8 +9,9 @@ var boxFlower,
 	sphereFlower,
 	torusFlower,
 	torusKnotFlower,
-	flowerMaterial,
-	stemMaterial; // Geometries & materials for the flower and the stem
+	defaultFlowerMaterial,
+	defaultStemMaterial; // Geometries & materials for the flower and the stem
+var flower01; // Flowers
 var flowerPot; // Pot + Flowers + Stems (Object3D)
 var POTCENTER, FLOWERPOTCENTER, flowerPotCenter; // Centers
 var ambient, key, fill, back; // Lights
@@ -37,7 +38,7 @@ var floatMemory; // Helper for randomFloat (implemented below)
  * @return {float} A random float that is no more higher than max and no more
  * smaller than min
  */
-function randomFloat( min, max, force = true, difference = 1 ) {
+function randomFloat( min, max, force = true, difference = 1.5 ) {
 
 	let result = ( Math.random() * ( max - min ) + min ).toFixed( 5 );
 
@@ -77,69 +78,101 @@ THREE.Object3D.prototype.getCenter = function () {
 /**
  * Class for creating flowers (including stems)
  *
- * @param {Geometry,BufferGeometry} geometry The geometry for the flower (required)
- * @param {number} flowerColor The color of the flower (default to random)
- * @param {number} stemColor The color of the stem (default to random)
- * @param {THREE.Vector3} position The position of the flower (excluding the stem) (default to random)
- * @param {THREE.Euler} rotation Flower's rotation (excluding the stem) (default to random)
- * @param {boolean} animation Enable animation (default to true)
- * @param {float} animationSpeed The speed of the animation (default to 1)
+ * Requires several arguments, the first one being required.
+ *
+ * Parameters are as follows:
+ * o flowerGeometry: The geometry for the flower (Geometry or BufferGeometry).
+ *   This parameter is required.
+ * o stemGeometry: Like the above, but for stem. Default to null, which a
+ *   calculated TubeBufferGeometry will be the geometry for the stem.
+ * o flowerMaterial: The material for the flower. Default to
+ *   defaultFlowerMaterial.clone().
+ * o stemMaterial: The material for the stem. Default to defaultStemMaterial.
+ *   Note that defaultStemMaterial is NOT a clone of it, so changing
+ *   defaultStemMaterial changes the material of all stems whose materials are
+ *   defaultStemMaterial. When having multiple such stems, they will all have
+ *   the same color.
+ * o flowerColor: The color of the flower in integer, or maybe hex value.
+ *   Default to a random color (computed using Math.random() * 0xffffff).
+ * o stemColor: Like the above but for the stem.
+ * o position: The position of the flower (Vector3). Defaut to a random
+ *   position, computed using randomFloat.
+ * o rotation: The rotation of the flower (Euler). Default to a random rotation,
+ *   computed using randomFloat.
+ *
+ * @param {Geometry,BufferGeometry} flowerGeometry The geometry for the flower (required)
+ * @param {Geometry,BufferGeometry} stemGeometry The geometry for the stem
+ * @param {Material} flowerMaterial The material for the flower
+ * @param {Material} stemMaterial The material for the stem
+ * @param {number} flowerColor The color of the flower
+ * @param {number} stemColor The color of the stem
+ * @param {THREE.Vector3} position The position of the flower
+ * @param {THREE.Euler} rotation Flower's rotation
  */
-function Flower(
-	geometry,
+function FlowerWithStem(
+	flowerGeometry,
+	stemGeometry = null,
+	flowerMaterial = defaultFlowerMaterial.clone(),
+	stemMaterial = defaultStemMaterial,
 	flowerColor = Math.random() * 0xffffff,
 	stemColor = Math.random() * 0xffffff,
-	position = new THREE.Vector3(
+	flowerPosition = new THREE.Vector3(
 		randomFloat( - 3, 3 ),
 		randomFloat( 4, 7.5 ),
 		randomFloat( - 3, 3 )
 	),
-	rotation = new THREE.Euler(
+	flowerRotation = new THREE.Euler(
 		randomFloat( 0, Math.PI ),
 		randomFloat( 0, Math.PI ),
 		randomFloat( 0, Math.PI )
-	),
-	animation = true,
-	animationSpeed = 1
+	)
 ) {
 
 	THREE.Object3D.apply( this, arguments );
 
-	this.name = "Flower";
+	let flower, stem;
 
-	let flower, stemCurve, stemGeometry, stem;
+	flower = new THREE.Mesh( flowerGeometry, flowerMaterial );
 
-	flower = new THREE.Mesh( geometry, flowerMaterial.clone() );
-
+	flower.name = "Flower";
 	flower.material.color.set( flowerColor );
-	flower.position.copy( position.clone() );
-	flower.rotation.copy( rotation.clone() );
+	flower.position.copy( flowerPosition.clone() );
+	flower.rotation.copy( flowerRotation.clone() );
 	flower.castShadow = true;
 	// flower.receiveShadow = true;
 
 	this.add( flower );
 
-	// FLOWERCENTER: The flower's center (variable: flower).
-	// POTCENTER: The pot's center (variable: pot).
-	// MIDDLE: The middle control point for the quadractic bezier curve that
-	// serves as the stem.
+	// Create default stem geometry (TubeBufferGeometry)
+	if ( stemGeometry == null ) {
 
-	let FLOWERCENTER = flower.getCenter();
-	POTCENTER = pot.getCenter();
-	let MIDDLE = new THREE.Vector3(
-		FLOWERCENTER.x * 0.2,
-		( FLOWERCENTER.y + POTCENTER.y ) / 1.2,
-		FLOWERCENTER.z * 0.2
-	);
+		// FLOWERCENTER: The flower's center (variable: flower).
+		// POTCENTER: The pot's center (variable: pot).
+		// MIDDLE: The middle control point for the quadractic bezier curve that
+		// serves as the stem.
 
-	stemCurve = new THREE.QuadraticBezierCurve3( FLOWERCENTER, MIDDLE, POTCENTER );
-	stemGeometry = new THREE.TubeBufferGeometry(
-		stemCurve.clone(),
-		50,
-		0.1,
-		50,
-		false
-	);
+		let FLOWERCENTER = flower.getCenter();
+		POTCENTER = pot.getCenter();
+		let MIDDLE = new THREE.Vector3(
+			FLOWERCENTER.x * 0.2,
+			( FLOWERCENTER.y + POTCENTER.y ) / 1.2,
+			FLOWERCENTER.z * 0.2
+		);
+
+		let stemCurve = new THREE.QuadraticBezierCurve3(
+			FLOWERCENTER,
+			MIDDLE,
+			POTCENTER
+		);
+		stemGeometry = new THREE.TubeBufferGeometry(
+			stemCurve.clone(),
+			50,
+			0.1,
+			50,
+			false
+		);
+
+	}
 
 	stem = new THREE.Mesh( stemGeometry, stemMaterial );
 
@@ -149,13 +182,10 @@ function Flower(
 
 	this.add( stem );
 
-	this.animation = animation;
-	this.animationSpeed = animationSpeed;
-
 }
 
-Flower.prototype = Object.create( THREE.Object3D.prototype );
-Flower.prototype.constructor = Flower;
+FlowerWithStem.prototype = Object.create( THREE.Object3D.prototype );
+FlowerWithStem.prototype.constructor = FlowerWithStem;
 
 if ( WEBGL.isWebGL2Available() ) {
 
@@ -188,8 +218,6 @@ function init() {
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.shadowMap.enabled = true;
 	renderer.shadowMap.needsUpdate = true;
-	// renderer.gammaInput = true;
-	// renderer.gammaOutput = true;
 	controls.enablePan = false;
 	controls.minDistance = 5;
 	controls.maxDistance = 30;
@@ -252,8 +280,8 @@ function init() {
 
 	flowerPot.add( pot );
 
-	// Create the geometries and materials necessary to create flowers. Flowers
-	// should be created in interactivity.js.
+	// Create the geometries and materials necessary to create flowers
+	// and add flowers to the pot
 
 	boxFlower = new THREE.BoxBufferGeometry( 0.85, 0.85, 0.85 );
 	cylinderFlower = new THREE.CylinderBufferGeometry( 0.5, 0.5, 1.5, 50, 10 );
@@ -264,8 +292,16 @@ function init() {
 	torusFlower = new THREE.TorusBufferGeometry( 0.75, 0.2, 50, 4 );
 	torusKnotFlower = new THREE.TorusKnotBufferGeometry( 0.5, 0.2, 120, 100 );
 
-	flowerMaterial = new THREE.MeshLambertMaterial();
-	stemMaterial = new THREE.MeshLambertMaterial( { side: THREE.DoubleSide } );
+	defaultFlowerMaterial = new THREE.MeshLambertMaterial();
+	defaultStemMaterial = new THREE.MeshLambertMaterial( {
+		side: THREE.DoubleSide
+	} );
+
+	flowerPot.add( new FlowerWithStem( torusKnotFlower ) );
+	flowerPot.add( new FlowerWithStem( dodecahedronFlower ) );
+	flowerPot.add( new FlowerWithStem( sphereFlower ) );
+	flowerPot.add( new FlowerWithStem( icosahedronFlower ) );
+	flowerPot.add( new FlowerWithStem( torusFlower ) );
 
 	// Add the flower pot and an Object3D at its center to the scene
 	// flowerPotCenter - the Object3D at the flower pot's center - will be
@@ -339,9 +375,9 @@ function render( event ) {
 
 	// Update things
 
-	keyHelper.update();
-	fillHelper.update();
-	backHelper.update();
+	// keyHelper.update();
+	// fillHelper.update();
+	// backHelper.update();
 	controls.update();
 
 	renderer.render( scene, camera );
