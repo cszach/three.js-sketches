@@ -43,14 +43,21 @@ the thumbnail to see the sketch's source code. Enjoy! :lollipop:
 
 ## :page_with_curl: Copyright
 
+### Code
+
 [no-lic]: https://choosealicense.com/no-permission/
 
 Copyright :copyright: 2019 by Nguyen Hoang Duong (<you_create@protonmail.com>).
+
+Currently the source code is not licensed. See [this page][no-lic] by GitHub to
+know what you are supposed to do. You can suggest a better license for this
+project by opening a new issue.
+
+### Textures
 
 One or more textures used in this project have been created with photographs
 from Textures.com. These photographs may not be redistributed by default;
 please visit www.textures.com for more information.
 
-Currently this project is not licensed. See [this page][no-lic] by GitHub to
-know what you are supposed to do. If you have a better license, please suggest
-(e.g. by opening a new issue).
+Some textures are made by Emil Persson (a.k.a. Humus). Those textures are
+licensed under the Creative Commons Attribution 3.0 Unported license.
