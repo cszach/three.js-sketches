@@ -20,7 +20,13 @@
 		<script src="../lib/OrbitControls.js"></script>
 		<script src="creative-flower-pot.js"></script>
 		<script>
-			flowerPot.remove(flower01, flower02, flower03, flower04, flower05);
+			flowerPot.remove(
+				flower01,
+				flower02,
+				flower03,
+				flower04,
+				flower05
+			);
 
 			flower01 = new FlowerWithStem(
 				dodecahedronFlower,
@@ -30,9 +36,9 @@
 				0xffee58,
 				0x26a69a,
 				new THREE.Vector3(
-					Math.cos(Math.PI / 5) * 2.5,
+					Math.cos( Math.PI / 5 ) * 2.5,
 					5,
-					Math.sin(Math.PI / 5) * 2.5
+					Math.sin( Math.PI / 5 ) * 2.5
 				),
 				undefined
 			);
@@ -45,9 +51,9 @@
 				0xef5350,
 				0x26a69a,
 				new THREE.Vector3(
-					Math.cos(Math.PI / 2.2) * 2.5,
+					Math.cos( Math.PI / 2.2 ) * 2.5,
 					4,
-					Math.sin(Math.PI / 2.2) * 2.5
+					Math.sin( Math.PI / 2.2 ) * 2.5
 				),
 				undefined
 			);
@@ -60,9 +66,9 @@
 				0x5c6bc0,
 				0x26a69a,
 				new THREE.Vector3(
-					Math.cos(Math.PI / 1.4) * 4,
+					Math.cos( Math.PI / 1.4 ) * 4,
 					4.5,
-					Math.sin(Math.PI / 1.4) * 4
+					Math.sin( Math.PI / 1.4 ) * 4
 				),
 				undefined
 			);
@@ -75,9 +81,9 @@
 				0xff7043,
 				0x26a69a,
 				new THREE.Vector3(
-					Math.cos(-Math.PI / 3) * 2,
+					Math.cos( - Math.PI / 3 ) * 2,
 					7.5,
-					Math.sin(-Math.PI / 3) * 2
+					Math.sin( - Math.PI / 3 ) * 2
 				),
 				undefined
 			);
@@ -90,14 +96,14 @@
 				0x66bb6a,
 				0x26a69a,
 				new THREE.Vector3(
-					Math.cos(-Math.PI / 1.3) * 1.5,
+					Math.cos( - Math.PI / 1.3 ) * 1.5,
 					7,
-					Math.sin(-Math.PI / 1.3) * 1.5
+					Math.sin( - Math.PI / 1.3 ) * 1.5
 				),
 				undefined
 			);
 
-			flowerPot.add(flower01, flower02, flower03, flower04, flower05);
+			flowerPot.add( flower01, flower02, flower03, flower04, flower05 );
 		</script>
 	</body>
 </html>
