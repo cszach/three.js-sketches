@@ -32,6 +32,7 @@ var boxFlower,
 	defaultFlowerMaterial,
 	defaultStemMaterial; // Geometries & materials for the flower and the stem
 var flowerPot; // Pot + Flowers + Stems (Object3D)
+var flower01, flower02, flower03, flower04, flower05; // Flowers
 var POTCENTER, FLOWERPOTCENTER, flowerPotCenter; // Centers
 var ambient, key, fill, back; // Lights
 var keyHelper, fillHelper, backHelper;
@@ -184,8 +185,11 @@ function FlowerWithStem(
 		// MIDDLE: The middle control point for the quadractic bezier curve that
 		// serves as the stem.
 
-		let FLOWERCENTER = flower.getCenter();
-		POTCENTER = pot.getCenter();
+		let FLOWERCENTER = new THREE.Vector3();
+		let POTCENTER = new THREE.Vector3();
+
+		flower.getCenter( FLOWERCENTER );
+		pot.getCenter( POTCENTER );
 		let MIDDLE = new THREE.Vector3(
 			FLOWERCENTER.x * 0.2,
 			( FLOWERCENTER.y + POTCENTER.y ) / 1.2,
@@ -341,11 +345,13 @@ function init() {
 		side: THREE.DoubleSide
 	} );
 
-	for ( let i = 0; i < 5; i ++ ) {
+	flower01 = new FlowerWithStem( randomGeometry( flowerGeometries ) );
+	flower02 = new FlowerWithStem( randomGeometry( flowerGeometries ) );
+	flower03 = new FlowerWithStem( randomGeometry( flowerGeometries ) );
+	flower04 = new FlowerWithStem( randomGeometry( flowerGeometries ) );
+	flower05 = new FlowerWithStem( randomGeometry( flowerGeometries ) );
 
-		flowerPot.add( new FlowerWithStem( randomGeometry( flowerGeometries ) ) );
-
-	}
+	flowerPot.add( flower01, flower02, flower03, flower04, flower05 );
 
 	// Add the flower pot and an Object3D at its center to the scene
 	// flowerPotCenter - the Object3D at the flower pot's center - will be
