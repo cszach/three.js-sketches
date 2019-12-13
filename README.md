@@ -12,16 +12,16 @@ the thumbnail to see the sketch's source code. Enjoy! :lollipop:
 <table>
     <tr>
         <td align="center">
-            <a href="https://you-create.github.io/three.js-sketches/creative-flower-pot"><img src="creative-flower-pot/thumbnail.png"/></a><br/>
-            <a href="creative-flower-pot/">creative-flower-pot</a>
+            <a href="https://you-create.github.io/three.js-sketches/sketches/creative-flower-pot"><img src="sketches/creative-flower-pot/thumbnail.png"/></a><br/>
+            <a href="sketches/creative-flower-pot/">creative-flower-pot</a>
         </td>
         <td align="center">
-            <a href="https://you-create.github.io/three.js-sketches/reflective-torus-knot"><img src="reflective-torus-knot/thumbnail.png"/></a><br/>
-            <a href="reflective-torus-knot/">reflective-torus-knot</a>
+            <a href="https://you-create.github.io/three.js-sketches/sketches/reflective-torus-knot"><img src="sketches/reflective-torus-knot/thumbnail.png"/></a><br/>
+            <a href="sketches/reflective-torus-knot/">reflective-torus-knot</a>
         </td>
         <td align="center">
-            <a href="https://you-create.github.io/three.js-sketches/woolen-balls"><img src="woolen-balls/thumbnail.png"/></a><br/>
-            <a href="woolen-balls/">woolen-balls</a>
+            <a href="https://you-create.github.io/three.js-sketches/sketches/woolen-balls"><img src="sketches/woolen-balls/thumbnail.png"/></a><br/>
+            <a href="sketches/woolen-balls/">woolen-balls</a>
         </td>
     </tr>
 </table>
