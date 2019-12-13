@@ -1,6 +1,6 @@
-import { WEBGL } from "../libm/WebGL.js";
-import * as THREE from "../libm/three.module.js";
-import { OrbitControls } from "../libm/OrbitControls.js";
+import { WEBGL } from "../../libm/WebGL.js";
+import * as THREE from "../../libm/three.module.js";
+import { OrbitControls } from "../../libm/OrbitControls.js";
 
 var scene, camera, renderer, controls; // Scene, camera, renderer, and controls
 var ground, WoolenBall, balls; // Meshes
@@ -55,7 +55,7 @@ function init() {
 	loader = new THREE.TextureLoader();
 
 	porcelainWhite = loader.load(
-		"../assets/textures/porcelain-white/matcap-porcelain-white.jpg"
+		"../../assets/textures/porcelain-white/matcap-porcelain-white.jpg"
 	);
 	material = new THREE.MeshMatcapMaterial( { matcap: porcelainWhite } );
 	geometry = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
@@ -67,32 +67,36 @@ function init() {
 
 	// Woolen balls
 
+	let wool01TextureUrl = "../../assets/textures/wool-01/";
+	let wool02TextureUrl = "../../assets/textures/wool-02/";
+	let wool03TextureUrl = "../../assets/textures/wool-03/";
+
 	wool01 = new THREE.MeshStandardMaterial( {
 		roughness: 1,
 		metalness: 0,
-		map: loader.load( "../assets/textures/wool-01/color.jpg" ),
-		aoMap: loader.load( "../assets/textures/wool-01/ao.jpg" ),
-		bumpMap: loader.load( "../assets/textures/wool-01/height.jpg" ),
-		normalMap: loader.load( "../assets/textures/wool-01/normal.jpg" ),
-		roughnessMap: loader.load( "../assets/textures/wool-01/roughness.jpg" )
+		map: loader.load( wool01TextureUrl + "color.jpg" ),
+		aoMap: loader.load( wool01TextureUrl + "ao.jpg" ),
+		bumpMap: loader.load( wool01TextureUrl + "height.jpg" ),
+		normalMap: loader.load( wool01TextureUrl + "normal.jpg" ),
+		roughnessMap: loader.load( wool01TextureUrl + "roughness.jpg" )
 	} );
 
 	wool02 = wool01.clone();
 	wool02.setValues( {
-		map: loader.load( "../assets/textures/wool-02/color.jpg" ),
-		aoMap: loader.load( "../assets/textures/wool-02/ao.jpg" ),
-		bumpMap: loader.load( "../assets/textures/wool-02/height.jpg" ),
-		normalMap: loader.load( "../assets/textures/wool-02/normal.jpg" ),
-		roughnessMap: loader.load( "../assets/textures/wool-02/roughness.jpg" )
+		map: loader.load( wool02TextureUrl + "color.jpg" ),
+		aoMap: loader.load( wool02TextureUrl + "ao.jpg" ),
+		bumpMap: loader.load( wool02TextureUrl + "height.jpg" ),
+		normalMap: loader.load( wool02TextureUrl + "normal.jpg" ),
+		roughnessMap: loader.load( wool02TextureUrl + "roughness.jpg" )
 	} );
 
 	wool03 = wool02.clone();
 	wool03.setValues( {
-		map: loader.load( "../assets/textures/wool-03/color.jpg" ),
-		aoMap: loader.load( "../assets/textures/wool-03/ao.jpg" ),
-		bumpMap: loader.load( "../assets/textures/wool-03/height.jpg" ),
-		normalMap: loader.load( "../assets/textures/wool-03/normal.jpg" ),
-		roughnessMap: loader.load( "../assets/textures/wool-03/roughness.jpg" )
+		map: loader.load( wool03TextureUrl + "color.jpg" ),
+		aoMap: loader.load( wool03TextureUrl + "ao.jpg" ),
+		bumpMap: loader.load( wool03TextureUrl + "height.jpg" ),
+		normalMap: loader.load( wool03TextureUrl + "normal.jpg" ),
+		roughnessMap: loader.load( wool03TextureUrl + "roughness.jpg" )
 	} );
 
 	let wools = [ wool01, wool02, wool03 ];

@@ -1,6 +1,6 @@
-import { WEBGL } from "../libm/WebGL.js";
-import * as THREE from "../libm/three.module.js";
-import { OrbitControls } from "../libm/OrbitControls.js";
+import { WEBGL } from "../../libm/WebGL.js";
+import * as THREE from "../../libm/three.module.js";
+import { OrbitControls } from "../../libm/OrbitControls.js";
 
 var scene, camera, renderer, controls; // Scene, camera, renderer, and controls
 var path, format, urls, loader, reflectionCube, refractionCube; // Cube mapping
@@ -52,7 +52,7 @@ function init() {
 
 	// Set up the cube map
 
-	path = "../assets/cube-maps/Yokohama/";
+	path = "../../assets/cube-maps/Yokohama/";
 	format = ".jpg";
 	urls = [
 		path + "posx" + format,

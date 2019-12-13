@@ -25,7 +25,6 @@ var time, clock; // Animation
 var aspect = window.innerWidth / window.innerHeight;
 var canvas = document.createElement( "canvas" );
 var context = canvas.getContext( "webgl2", { alpha: false } );
-var texturesUrl = "../assets/textures/";
 var RED = new THREE.Color( 0xff0000 );
 var GREEN = new THREE.Color( 0x00ff00 );
 var BLUE = new THREE.Color( 0x0000ff );
@@ -134,21 +133,11 @@ function init() {
 
 	loader = new THREE.TextureLoader();
 
-	// let floorTexturesUrl = texturesUrl + "floor-02/";
-
 	dimension = new THREE.Vector3( 30, 20, 20 );
 	wallMaterial = new THREE.MeshPhongMaterial( {
 		shininess: 20,
 		color: 0x9d1b3a
 	} );
-	// floorMaterial = new THREE.MeshStandardMaterial( {
-	// 	roughness: 1,
-	// 	map: loader.load( floorTexturesUrl + "color.jpg" ),
-	// 	// aoMap: loader.load( floorTexturesUrl + "ao.jpg" ),
-	// 	// bumpMap: loader.load( floorTexturesUrl + "height.jpg" ),
-	// 	normalMap: loader.load( floorTexturesUrl + "normal.jpg" ),
-	// 	roughnessMap: loader.load( floorTexturesUrl + "roughness.jpg" )
-	// } );
 	floorMaterial = new THREE.MeshStandardMaterial( {
 		color: 0xeeeeee,
 		roughness: 0.8,
@@ -299,23 +288,23 @@ function init() {
 	// Add a model of the Earth
 	// This includes the surface and the atmosphere
 
+	let earthTexturesUrl = "../../assets/textures/earth/";
+
 	planet = new THREE.Mesh(
 		new THREE.SphereBufferGeometry( 2, 50, 50 ),
 		new THREE.MeshPhongMaterial( {
 			specular: 0x333333,
 			shininess: 15,
-			map: loader.load( "../assets/textures/earth/earth_atmos_2048.jpg" ),
-			specularMap: loader.load(
-				"../assets/textures/earth/earth_specular_2048.jpg"
-			),
-			normalMap: loader.load( "../assets/textures/earth/earth_normal_2048.jpg" ),
+			map: loader.load( earthTexturesUrl + "earth_atmos_2048.jpg" ),
+			specularMap: loader.load( earthTexturesUrl + "earth_specular_2048.jpg" ),
+			normalMap: loader.load( earthTexturesUrl + "earth_normal_2048.jpg" ),
 			normalScale: new THREE.Vector2( 0.85, 0.85 )
 		} )
 	);
 	clouds = new THREE.Mesh(
 		new THREE.SphereBufferGeometry( 2, 50, 50 ),
 		new THREE.MeshLambertMaterial( {
-			map: loader.load( "../assets/textures/earth/earth_clouds_1024.png" ),
+			map: loader.load( earthTexturesUrl + "earth_clouds_1024.png" ),
 			transparent: true
 		} )
 	);
