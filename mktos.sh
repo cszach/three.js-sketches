@@ -11,13 +11,7 @@ test_port="8000"
 
 # Get existing sketches
 
-sketches=$( /usr/bin/find . -maxdepth 1 -type d -not \( -name 'lib' \
-										             -o -name 'libm' \
-											         -o -name 'assets' \
-											         -o -name 'node_modules' \
-											         -o -name '.git' \
-											         -o -name '.' \
-		    \) -exec basename {} ';');
+sketches=$( /usr/bin/find sketches/ -mindepth 1 -maxdepth 1 -type d -exec basename {} ';');
 
 if [ "$1" == "-t" ]
 then
