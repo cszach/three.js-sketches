@@ -39,7 +39,7 @@ the thumbnail to see the sketch's source code. Enjoy! :lollipop:
 - `lib/`: JavaScript libraries used in the sketches
 - `libm/`: JavaScript modules used in the sketches
 - `assets/`: Assets (including textures) used by the sketches
-- Every other directory: The sketches, each directory for one sketch
+- `sketches/`: The sketches, each child directory for one sketch
 
 ## :page_with_curl: Copyright
 

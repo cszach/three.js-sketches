@@ -40,7 +40,7 @@ do
 	col=$(( $col + 1 ));
 	
 	/usr/bin/printf "$t$t<td align=\"center\">\n$t$t$t<a href=\"%s\"><img src=\"%s\"/></a><br/>\n$t$t$t<a href=\"%s\">%s</a>\n$t$t</td>\n" \
-					"$domain/$sketch"  "$sketch/$thumb" "$sketch/" "$sketch"
+					"$domain/sketches/$sketch"  "sketches/$sketch/$thumb" "sketches/$sketch/" "$sketch"
 	
 	if [[ $col -eq 3 || $col -eq $(( $( /usr/bin/printf "$sketches" | /usr/bin/wc --lines ) + 1 )) ]]
 	then
