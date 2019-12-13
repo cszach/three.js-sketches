@@ -14,6 +14,7 @@ var door,
 	doorKnobGeometry,
 	doorKnobMaterial,
 	doorWithKnobs; // The room's door
+var button, buttonGeometry, buttonMaterial, buttonLight; // Light switch
 var cube, torus, stand, earth, planet, clouds; // Miscellaenous objects
 var ambient, point, pointIntensity, bulb, bulbGeometry, bulbMaterial; // Lights
 var raycaster, mouse, intersects; // Raycasting
@@ -25,6 +26,9 @@ var aspect = window.innerWidth / window.innerHeight;
 var canvas = document.createElement( "canvas" );
 var context = canvas.getContext( "webgl2", { alpha: false } );
 var texturesUrl = "../assets/textures/";
+var RED = new THREE.Color( 0xff0000 );
+var GREEN = new THREE.Color( 0x00ff00 );
+var BLUE = new THREE.Color( 0x0000ff );
 
 /**
  * A class that represents a room made up of four walls, a floor and a ceilling
@@ -192,7 +196,24 @@ function init() {
 	doorWithKnobs.position.y = - 2.5;
 	doorWithKnobs.userData = { isClosed: true };
 
-	scene.add( doorWithKnobs );
+	room.add( doorWithKnobs );
+
+	// Create a light switch
+
+	buttonGeometry = new THREE.BoxGeometry( 0.6, 0.9, 0.1 );
+	buttonMaterial = new THREE.MeshStandardMaterial( {
+		color: 0x000000,
+		emissive: 0x00ff00,
+		emissiveIntensity: 0.8
+	} );
+	button = new THREE.Mesh( buttonGeometry, buttonMaterial );
+	button.name = "Button";
+
+	buttonLight = new THREE.PointLight( 0x00ff00, 0.3, 3 );
+	buttonLight.add( button );
+	buttonLight.position.set( 6, - 0.5, 9.95 );
+
+	room.add( buttonLight );
 
 	// Add a mirror
 
@@ -220,18 +241,14 @@ function init() {
 
 	mirrorSurface.castShadow = mirrorMesh.castShadow = true;
 
-	scene.add( mirror );
+	room.add( mirror );
 
 	// Add some miscellaenous objects
 
 	// Add a cube with different colors on different faces
 
 	let cubeGeo = new THREE.BoxGeometry( 5, 5, 5 );
-	let cubeFaceColors = [
-		new THREE.Color( 0xff0000 ),
-		new THREE.Color( 0x00ff00 ),
-		new THREE.Color( 0x0000ff )
-	];
+	let cubeFaceColors = [ RED, GREEN, BLUE ];
 
 	for ( let i = 0; i < cubeGeo.faces.length / 4; i ++ ) {
 
@@ -315,7 +332,7 @@ function init() {
 	cube.castShadow = torus.castShadow = stand.castShadow = planet.castShadow = clouds.castShadow = true;
 	cube.receiveShadow = torus.receiveShadow = stand.receiveShadow = true;
 
-	scene.add( cube, torus, stand, earth );
+	room.add( cube, torus, stand, earth );
 
 	// Lighting
 
@@ -339,14 +356,14 @@ function init() {
 	point.position.y = 8;
 	point.userData = { isOn: true };
 
-	scene.add( ambient, point );
+	room.add( ambient, point );
 
 	// Helpers
 
-	firstView = new THREE.CameraHelper( first );
-	firstView.visible = camera == third;
-
-	scene.add( firstView );
+	// firstView = new THREE.CameraHelper( first );
+	// firstView.visible = camera == third;
+	//
+	// room.add( firstView );
 
 	// Raycasting setup
 
@@ -359,6 +376,25 @@ function init() {
 	window.addEventListener( "mousemove", onMouseMove, false );
 	window.addEventListener( "mousedown", onMouseClick, false );
 	document.body.addEventListener( "keypress", onKeyPress, false );
+
+}
+
+function switchLight() {
+
+	point.userData.isOn = ! point.userData.isOn;
+	let isLightOn = point.userData.isOn;
+
+	// Change the light's intensity
+
+	point.intensity = isLightOn ? pointIntensity : 0;
+	bulbMaterial.emissiveIntensity = isLightOn ? 1 : 0.25;
+
+	// Change the color of the button and its light
+
+	buttonLight.color = isLightOn ? GREEN : RED;
+	buttonMaterial.setValues( {
+		emissive: buttonLight.color
+	} );
 
 }
 
@@ -379,7 +415,7 @@ function onKeyPress( event ) {
 
 		case "KeyC":
 			camera = camera == first ? third : first;
-			firstView.visible = camera == third;
+			// firstView.visible = camera == third;
 			break;
 
 	}
@@ -416,9 +452,8 @@ function raycast() {
 		switch ( intersects[ 0 ].object.name ) {
 
 			case "Light bulb":
-				point.userData.isOn = ! point.userData.isOn;
-				point.intensity = point.userData.isOn ? pointIntensity : 0;
-				bulbMaterial.emissiveIntensity = point.userData.isOn ? 1 : 0.25;
+			case "Button":
+				switchLight();
 				break;
 			case "Door knob":
 				doorWithKnobs.userData.isClosed = ! doorWithKnobs.userData.isClosed;
@@ -455,7 +490,7 @@ function render( event ) {
 
 	} else {
 
-		firstView.update();
+		// firstView.update();
 		orbit.update();
 
 	}
