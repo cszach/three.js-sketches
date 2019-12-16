@@ -17,8 +17,9 @@ var door,
 var button, buttonGeometry, buttonMaterial, buttonLight; // Light switch
 var cube, torus, stand, earth, planet, clouds; // Miscellaenous objects
 var ambient, point, pointIntensity, bulb, bulbGeometry, bulbMaterial; // Lights
+var donut01, donut02, donut03, donut04, donut05, donut06, donut07;
 var raycaster, mouse, intersects; // Raycasting
-var loader; // Loaders
+var textureLoader, modelLoader; // Loaders
 var firstView; // Helpers
 var time, clock; // Animation
 
@@ -131,7 +132,7 @@ function init() {
 
 	// Create the room
 
-	loader = new THREE.TextureLoader();
+	textureLoader = new THREE.TextureLoader();
 
 	dimension = new THREE.Vector3( 30, 20, 20 );
 	wallMaterial = new THREE.MeshPhongMaterial( {
@@ -288,23 +289,23 @@ function init() {
 	// Add a model of the Earth
 	// This includes the surface and the atmosphere
 
-	let earthTexturesUrl = "../../assets/textures/earth/";
+	textureLoader.setPath( "../../assets/textures/earth/" );
 
 	planet = new THREE.Mesh(
 		new THREE.SphereBufferGeometry( 2, 50, 50 ),
 		new THREE.MeshPhongMaterial( {
 			specular: 0x333333,
 			shininess: 15,
-			map: loader.load( earthTexturesUrl + "earth_atmos_2048.jpg" ),
-			specularMap: loader.load( earthTexturesUrl + "earth_specular_2048.jpg" ),
-			normalMap: loader.load( earthTexturesUrl + "earth_normal_2048.jpg" ),
+			map: textureLoader.load( "earth_atmos_2048.jpg" ),
+			specularMap: textureLoader.load( "earth_specular_2048.jpg" ),
+			normalMap: textureLoader.load( "earth_normal_2048.jpg" ),
 			normalScale: new THREE.Vector2( 0.85, 0.85 )
 		} )
 	);
 	clouds = new THREE.Mesh(
 		new THREE.SphereBufferGeometry( 2, 50, 50 ),
 		new THREE.MeshLambertMaterial( {
-			map: loader.load( earthTexturesUrl + "earth_clouds_1024.png" ),
+			map: textureLoader.load( "earth_clouds_1024.png" ),
 			transparent: true
 		} )
 	);
@@ -322,6 +323,81 @@ function init() {
 	cube.receiveShadow = torus.receiveShadow = stand.receiveShadow = true;
 
 	room.add( cube, torus, stand, earth );
+
+	// Add the donuts
+
+	modelLoader = new THREE.GLTFLoader();
+	modelLoader.setPath( "models/" );
+
+	modelLoader.load( "mint-donut-with-cream-and-sprinkles.glb", function ( gltf ) {
+
+		donut01 = gltf.scene.children[ 0 ];
+		donut01.scale.set( 20, 20, 20 );
+		donut01.position.set( - 1, 0, - 13 );
+
+		room.add( donut01 );
+
+	} );
+
+	modelLoader.load( "white-dough-with-chocolate-cream.glb", function ( gltf ) {
+
+		donut02 = gltf.scene.children[ 0 ];
+		donut02.scale.set( 10, 10, 10 );
+		donut02.position.set( - 8, - 7, - 12 );
+
+		room.add( donut02 );
+
+	} );
+
+	modelLoader.load( "strawberry-donut-with-hearts.glb", function ( gltf ) {
+
+		donut03 = gltf.scene.children[ 0 ];
+		donut03.scale.set( 7, 7, 7 );
+		donut03.position.set( - 12, - 2, - 10 );
+
+		room.add( donut03 );
+
+	} );
+
+	modelLoader.load( "chocolate-donut-with-colorful-candies.glb", function ( gltf ) {
+
+		donut04 = gltf.scene.children[ 0 ];
+		donut04.scale.set( 13, 13, 13 );
+		donut04.position.set( - 11, 4, - 13 );
+
+		room.add( donut04 );
+
+	} );
+
+	modelLoader.load( "white-donut-with-colorful-sprinkles.glb", function ( gltf ) {
+
+		donut05 = gltf.scene.children[ 0 ];
+		donut05.scale.set( 12, 12, 12 );
+		donut05.position.set( 9, - 6, - 12 );
+
+		room.add( donut05 );
+
+	} );
+
+	modelLoader.load( "taro-and-mint-flavored-donut.glb", function ( gltf ) {
+
+		donut06 = gltf.scene.children[ 0 ];
+		donut06.scale.set( 8, 8, 8 );
+		donut06.position.set( 11, 1, - 11 );
+
+		room.add( donut06 );
+
+	} );
+
+	modelLoader.load( "pink-donut-with-white-cream.glb", function ( gltf ) {
+
+		donut07 = gltf.scene.children[ 0 ];
+		donut07.scale.set( 8, 8, 8 );
+		donut07.position.set( 8, 6, - 12 );
+
+		room.add( donut07 );
+
+	} );
 
 	// Lighting
 
