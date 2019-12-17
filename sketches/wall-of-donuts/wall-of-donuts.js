@@ -1,3 +1,17 @@
+/**
+ * Wall of Donuts
+ *
+ * A room with donuts sticked on one wall and has some misc objects in it
+ * (because why not?). This sketch also contains interaction.
+ *
+ * The position of the room, the door (& the doorview), the mirror, and the
+ * light switch are dynamic i.e. they are calculated based on DIMENSION (see
+ * 'Constants' below) and changing DIMENSION will also change their respective
+ * position. Other objects' positions are not and have to be set manually.
+ *
+ * @author Nguyen Hoang Duong / https://github.com/you-create
+ */
+
 // Everything inside the scene + variables used for raycasting, animation,
 // and loaders
 
