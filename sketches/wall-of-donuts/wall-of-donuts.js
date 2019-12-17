@@ -34,7 +34,9 @@ var donut01, donut02, donut03, donut04, donut05, donut06, donut07; // Donuts
 var buttonMaterial, bulbMaterial; // Materials that are not static
 var raycaster, mouse, intersects; // Raycasting
 var textureLoader, modelLoader; // Loaders
+var firstView; // Helpers
 var time, clock; // Animation
+var debugging = false; // Is debugging
 
 // Variables used by the camera and the renderer
 
@@ -132,8 +134,8 @@ function init() {
 
 	scene = new THREE.Scene();
 	first = new THREE.PerspectiveCamera( 50, aspect, 0.1, 100 );
+	firstView = new THREE.CameraHelper( first );
 	third = new THREE.PerspectiveCamera( 75, aspect, 0.1, 1000 );
-	camera = third;
 	renderer = new THREE.WebGLRenderer( {
 		canvas: canvas,
 		context: context,
@@ -144,7 +146,9 @@ function init() {
 	orbit = new THREE.OrbitControls( third, renderer.domElement );
 
 	first.position.set( 0, 2, 3 );
+	firstView.visible = debugging;
 	third.position.set( 0, 20, 15 );
+	camera = debugging ? third : first;
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.shadowMap.enabled = true;
@@ -154,6 +158,7 @@ function init() {
 	orbit.autoRotate = true;
 
 	document.body.appendChild( renderer.domElement );
+	scene.add( firstView );
 
 	// Create the room
 
@@ -495,6 +500,8 @@ function init() {
 	window.addEventListener( "mousedown", onMouseClick, false );
 	document.body.addEventListener( "keypress", onKeyPress, false );
 
+	console.log( "Debugging mode: " + ( debugging ? "ON" : "OFF" ) );
+
 }
 
 function switchLight() {
@@ -537,8 +544,23 @@ function onKeyPress( event ) {
 	switch ( event.code ) {
 
 		case "KeyC":
-			camera = camera == first ? third : first;
-			// firstView.visible = camera == third;
+			if ( debugging ) {
+
+				camera = camera == first ? third : first;
+				firstView.visible = camera == third;
+
+			}
+			break;
+		case "KeyD":
+			debugging = ! debugging;
+			if ( ! debugging && camera == third ) {
+
+				camera = first;
+				firstView.visible = false;
+
+			}
+
+			console.log( "Debugging mode: " + ( debugging ? "ON" : "OFF" ) );
 			break;
 
 	}
@@ -614,6 +636,7 @@ function render( event ) {
 	if ( camera == first ) {
 
 		fly.update( clock.getDelta() );
+		firstView.update();
 
 	} else {
 
