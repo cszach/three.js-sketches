@@ -15,6 +15,7 @@
  *       from "outside" the door
  *     o Correct shadows
  *     o Correct dimension
+ *  o Correct dimension (e.g. simulate first person view in real life)
  *  o Find better controls (i.e. just like FlyControls but no z-rotation)
  *
  * @author Nguyen Hoang Duong / https://github.com/you-create
