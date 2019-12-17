@@ -1,29 +1,15 @@
-// These variables are everything inside the scene as well as anything used to
-// construct them (e.g. geometry, material)
+// Everything inside the scene + variables used for raycasting, animation,
+// and loaders
 
 var scene, camera, first, third, renderer, fly, orbit;
-var room, wallMaterial, floorMaterial, ceilingMaterial; // The room
-var mirrorSurfaceGeometry,
-	mirrorSurface,
-	mirrorGeometry,
-	mirrorMaterial,
-	mirrorMesh,
-	mirror; // Mirror
-var door,
-	doorGeometry,
-	doorMaterial,
-	doorKnob01,
-	doorKnob02,
-	doorKnobGeometry,
-	doorKnobMaterial,
-	doorWithKnobs,
-	doorView,
-	doorViewImage,
-	doorViewPlane; // The room's door
-var button, buttonGeometry, buttonMaterial, buttonLight; // Light switch
+var room; // Room
+var mirror, mirrorSurface, mirrorMesh; // Mirror
+var door, doorKnob01, doorKnob02, doorWithKnobs, doorView; // Room's door
+var button, buttonLight; // Light switch
 var cube, torus, stand, earth, planet, clouds; // Miscellaenous objects
-var ambient, point, pointIntensity, bulb, bulbGeometry, bulbMaterial; // Lights
-var donut01, donut02, donut03, donut04, donut05, donut06, donut07;
+var ambient, point, bulb; // Lights
+var donut01, donut02, donut03, donut04, donut05, donut06, donut07; // Donuts
+var buttonMaterial, bulbMaterial; // Materials that are not static
 var raycaster, mouse, intersects; // Raycasting
 var textureLoader, modelLoader; // Loaders
 var time, clock; // Animation
@@ -39,12 +25,13 @@ var context = canvas.getContext( "webgl2", { alpha: false } );
 var RED = new THREE.Color( 0xff0000 );
 var GREEN = new THREE.Color( 0x00ff00 );
 var BLUE = new THREE.Color( 0x0000ff );
-var NORMALROOMAMBIENT = new THREE.Color( 0x222222 ); // Color of the ambient light when the room's door is closed
-var OUTSIDELIGHTEDAMBIENT = new THREE.Color( 0x555555 ); // Color of the ambient light when the room's door is opened
 var OFFSET = 0.001; // The amount of translation used to avoid z-fighting
-var DIMENSION = new THREE.Vector3( 30, 20, 20 );
+var DIMENSION = new THREE.Vector3( 30, 20, 20 ); // The dimension of the room
 var DOORWIDTH = 9; // The width of the room's door
 var DOORHEIGHT = 15; // The height of the room's door
+var NORMALROOMAMBIENT = new THREE.Color( 0x222222 ); // Color of the ambient light when the room's door is closed
+var OUTSIDELIGHTEDAMBIENT = new THREE.Color( 0x555555 ); // Color of the ambient light when the room's door is opened
+var POINTLIGHTINTENSITY = 1.75; // The intensity of the room's point light when it is on
 
 /**
  * A class that represents a room made up of four walls, a floor and a ceilling
@@ -150,16 +137,16 @@ function init() {
 
 	textureLoader = new THREE.TextureLoader();
 
-	wallMaterial = new THREE.MeshPhongMaterial( {
+	let wallMaterial = new THREE.MeshPhongMaterial( {
 		shininess: 20,
 		color: 0x9d1b3a
 	} );
-	floorMaterial = new THREE.MeshStandardMaterial( {
+	let floorMaterial = new THREE.MeshStandardMaterial( {
 		color: 0xeeeeee,
 		roughness: 0.8,
 		metalness: 0.2
 	} );
-	ceilingMaterial = wallMaterial.clone();
+	let ceilingMaterial = wallMaterial.clone();
 
 	room = new Room( DIMENSION, wallMaterial, floorMaterial, ceilingMaterial );
 	room.name = "Room";
@@ -168,20 +155,22 @@ function init() {
 
 	// Add a door
 
-	doorGeometry = new THREE.BoxGeometry( DOORWIDTH, DOORHEIGHT, 0.25 );
-	doorMaterial = new THREE.MeshStandardMaterial( {
+	let doorGeometry = new THREE.BoxGeometry( DOORWIDTH, DOORHEIGHT, 0.25 );
+	let doorMaterial = new THREE.MeshStandardMaterial( {
 		color: 0xfb8c00,
 		roughness: 0.8,
 		metalness: 0.3
 	} );
+
 	door = new THREE.Mesh( doorGeometry, doorMaterial );
 
-	doorKnobGeometry = new THREE.SphereGeometry( 0.45, 45, 45 );
-	doorKnobMaterial = new THREE.MeshStandardMaterial( {
+	let doorKnobGeometry = new THREE.SphereGeometry( 0.45, 45, 45 );
+	let doorKnobMaterial = new THREE.MeshStandardMaterial( {
 		color: 0xffeb3b,
 		roughness: 0.8,
 		metalness: 0.5
 	} );
+
 	doorKnob01 = new THREE.Mesh( doorKnobGeometry, doorKnobMaterial );
 	doorKnob02 = doorKnob01.clone();
 
@@ -207,14 +196,13 @@ function init() {
 
 	textureLoader.setPath( "textures/" );
 
-	doorViewImage = textureLoader.load( "doorview.png" );
-	doorViewPlane = new THREE.PlaneBufferGeometry( DOORWIDTH, DOORHEIGHT );
-	doorView = new THREE.Mesh(
-		doorViewPlane,
-		new THREE.MeshBasicMaterial( {
-			map: doorViewImage
-		} )
-	);
+	let doorViewImage = textureLoader.load( "doorview.png" );
+	let doorViewGeometry = new THREE.PlaneBufferGeometry( DOORWIDTH, DOORHEIGHT );
+	let doorViewMaterial = new THREE.MeshBasicMaterial( {
+		map: doorViewImage
+	} );
+
+	doorView = new THREE.Mesh( doorViewGeometry, doorViewMaterial );
 
 	doorView.rotation.y = Math.PI;
 	doorView.position.set(
@@ -229,12 +217,13 @@ function init() {
 
 	let SWITCHDEPTH = 0.1;
 
-	buttonGeometry = new THREE.BoxGeometry( 0.6, 0.9, SWITCHDEPTH );
+	let buttonGeometry = new THREE.BoxGeometry( 0.6, 0.9, SWITCHDEPTH );
 	buttonMaterial = new THREE.MeshStandardMaterial( {
 		color: 0x000000,
 		emissive: 0x00ff00,
 		emissiveIntensity: 0.8
 	} );
+
 	button = new THREE.Mesh( buttonGeometry, buttonMaterial );
 	button.name = "Button";
 
@@ -250,26 +239,26 @@ function init() {
 	let MIRRORHEIGHT = 18;
 	let MIRRORDEPTH = 0.125;
 
-	mirrorSurfaceGeometry = new THREE.PlaneBufferGeometry(
+	let mirrorSurfaceGeometry = new THREE.PlaneBufferGeometry(
 		MIRRORWIDTH,
 		MIRRORHEIGHT
 	);
+
 	mirrorSurface = new THREE.Reflector( mirrorSurfaceGeometry, {
 		textureWidth: window.innerWidth * window.devicePixelRatio,
 		textureHeight: window.innerWidth * window.devicePixelRatio,
 		recursion: 1
 	} );
-
 	mirrorSurface.position.z = MIRRORDEPTH / 2;
 
-	mirrorGeometry = new THREE.BoxGeometry(
+	let mirrorGeometry = new THREE.BoxGeometry(
 		MIRRORWIDTH,
 		MIRRORHEIGHT,
 		MIRRORDEPTH - OFFSET
 	);
-	mirrorMaterial = new THREE.MeshBasicMaterial( { color: 0x222222 } );
-	mirrorMesh = new THREE.Mesh( mirrorGeometry, mirrorMaterial );
+	let mirrorMaterial = new THREE.MeshBasicMaterial( { color: 0x222222 } );
 
+	mirrorMesh = new THREE.Mesh( mirrorGeometry, mirrorMaterial );
 	mirrorMesh.position.z = - OFFSET;
 
 	mirror = new THREE.Object3D();
@@ -453,7 +442,7 @@ function init() {
 
 	ambient = new THREE.AmbientLight( NORMALROOMAMBIENT );
 
-	bulbGeometry = new THREE.SphereBufferGeometry( 1, 50, 50 );
+	let bulbGeometry = new THREE.SphereBufferGeometry( 1, 50, 50 );
 	bulbMaterial = new THREE.MeshStandardMaterial( {
 		emissive: 0xffffff,
 		emissiveIntensity: 1,
@@ -463,8 +452,7 @@ function init() {
 	bulb = new THREE.Mesh( bulbGeometry, bulbMaterial );
 	bulb.name = "Light bulb";
 
-	pointIntensity = 1.75;
-	point = new THREE.PointLight( 0xffffff, pointIntensity, 40, 1 );
+	point = new THREE.PointLight( 0xffffff, POINTLIGHTINTENSITY, 40, 1 );
 	point.add( bulb );
 	point.castShadow = true;
 	point.shadow.mapSize.width = point.shadow.mapSize.height = 2048;
@@ -494,7 +482,7 @@ function switchLight() {
 
 	// Change the light's intensity
 
-	point.intensity = isLightOn ? pointIntensity : 0;
+	point.intensity = isLightOn ? POINTLIGHTINTENSITY : 0;
 	bulbMaterial.emissiveIntensity = isLightOn ? 1 : 0.25;
 
 	// Change the color of the button and its light
