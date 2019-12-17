@@ -36,7 +36,7 @@ var raycaster, mouse, intersects; // Raycasting
 var textureLoader, modelLoader; // Loaders
 var firstView; // Helpers
 var time, clock; // Animation
-var debugging = false; // Is debugging
+var debugging = false; // Is debugging?
 
 // Variables used by the camera and the renderer
 
@@ -562,6 +562,8 @@ function onKeyPress( event ) {
 
 			console.log( "Debugging mode: " + ( debugging ? "ON" : "OFF" ) );
 			break;
+		default:
+			event.preventDefault();
 
 	}
 
