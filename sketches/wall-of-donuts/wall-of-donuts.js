@@ -9,6 +9,14 @@
  * 'Constants' below) and changing DIMENSION will also change their respective
  * position. Other objects' positions are not and have to be set manually.
  *
+ * TODO:
+ *   o Implement physically correct lights & shadows
+ *     o Physically correct ambient lights, point lights, and external light
+ *       from "outside" the door
+ *     o Correct shadows
+ *     o Correct dimension
+ *  o Find better controls (i.e. just like FlyControls but no z-rotation)
+ *
  * @author Nguyen Hoang Duong / https://github.com/you-create
  */
 
