@@ -1,5 +1,8 @@
+// These variables are everything inside the scene as well as anything used to
+// construct them (e.g. geometry, material)
+
 var scene, camera, first, third, renderer, fly, orbit;
-var room, dimension, wallMaterial, floorMaterial, ceilingMaterial; // The room
+var room, wallMaterial, floorMaterial, ceilingMaterial; // The room
 var mirrorSurfaceGeometry,
 	mirrorSurface,
 	mirrorGeometry,
@@ -13,22 +16,35 @@ var door,
 	doorKnob02,
 	doorKnobGeometry,
 	doorKnobMaterial,
-	doorWithKnobs; // The room's door
+	doorWithKnobs,
+	doorView,
+	doorViewImage,
+	doorViewPlane; // The room's door
 var button, buttonGeometry, buttonMaterial, buttonLight; // Light switch
 var cube, torus, stand, earth, planet, clouds; // Miscellaenous objects
 var ambient, point, pointIntensity, bulb, bulbGeometry, bulbMaterial; // Lights
 var donut01, donut02, donut03, donut04, donut05, donut06, donut07;
 var raycaster, mouse, intersects; // Raycasting
 var textureLoader, modelLoader; // Loaders
-var firstView; // Helpers
 var time, clock; // Animation
+
+// Variables used by the camera and the renderer
 
 var aspect = window.innerWidth / window.innerHeight;
 var canvas = document.createElement( "canvas" );
 var context = canvas.getContext( "webgl2", { alpha: false } );
+
+// Constants
+
 var RED = new THREE.Color( 0xff0000 );
 var GREEN = new THREE.Color( 0x00ff00 );
 var BLUE = new THREE.Color( 0x0000ff );
+var NORMALROOMAMBIENT = new THREE.Color( 0x222222 ); // Color of the ambient light when the room's door is closed
+var OUTSIDELIGHTEDAMBIENT = new THREE.Color( 0x555555 ); // Color of the ambient light when the room's door is opened
+var OFFSET = 0.001; // The amount of translation used to avoid z-fighting
+var DIMENSION = new THREE.Vector3( 30, 20, 20 );
+var DOORWIDTH = 9; // The width of the room's door
+var DOORHEIGHT = 15; // The height of the room's door
 
 /**
  * A class that represents a room made up of four walls, a floor and a ceilling
@@ -134,7 +150,6 @@ function init() {
 
 	textureLoader = new THREE.TextureLoader();
 
-	dimension = new THREE.Vector3( 30, 20, 20 );
 	wallMaterial = new THREE.MeshPhongMaterial( {
 		shininess: 20,
 		color: 0x9d1b3a
@@ -146,14 +161,14 @@ function init() {
 	} );
 	ceilingMaterial = wallMaterial.clone();
 
-	room = new Room( dimension, wallMaterial, floorMaterial, ceilingMaterial );
+	room = new Room( DIMENSION, wallMaterial, floorMaterial, ceilingMaterial );
 	room.name = "Room";
 
 	scene.add( room );
 
 	// Add a door
 
-	doorGeometry = new THREE.BoxGeometry( 9, 15, 0.25 );
+	doorGeometry = new THREE.BoxGeometry( DOORWIDTH, DOORHEIGHT, 0.25 );
 	doorMaterial = new THREE.MeshStandardMaterial( {
 		color: 0xfb8c00,
 		roughness: 0.8,
@@ -182,15 +197,39 @@ function init() {
 	doorWithKnobs.name = "Door";
 	doorWithKnobs.add( door, doorKnob01, doorKnob02 );
 
-	doorWithKnobs.position.z = 10;
-	doorWithKnobs.position.y = - 2.5;
+	doorWithKnobs.position.z = DIMENSION.z / 2;
+	doorWithKnobs.position.y = DOORHEIGHT / 2 - DIMENSION.y / 2;
 	doorWithKnobs.userData = { isClosed: true };
 
 	room.add( doorWithKnobs );
 
+	// Add a door view
+
+	textureLoader.setPath( "textures/" );
+
+	doorViewImage = textureLoader.load( "doorview.png" );
+	doorViewPlane = new THREE.PlaneBufferGeometry( DOORWIDTH, DOORHEIGHT );
+	doorView = new THREE.Mesh(
+		doorViewPlane,
+		new THREE.MeshBasicMaterial( {
+			map: doorViewImage
+		} )
+	);
+
+	doorView.rotation.y = Math.PI;
+	doorView.position.set(
+		doorWithKnobs.position.x,
+		doorWithKnobs.position.y,
+		doorWithKnobs.position.z - OFFSET
+	);
+
+	room.add( doorView );
+
 	// Create a light switch
 
-	buttonGeometry = new THREE.BoxGeometry( 0.6, 0.9, 0.1 );
+	let SWITCHDEPTH = 0.1;
+
+	buttonGeometry = new THREE.BoxGeometry( 0.6, 0.9, SWITCHDEPTH );
 	buttonMaterial = new THREE.MeshStandardMaterial( {
 		color: 0x000000,
 		emissive: 0x00ff00,
@@ -201,33 +240,44 @@ function init() {
 
 	buttonLight = new THREE.PointLight( 0x00ff00, 0.3, 3 );
 	buttonLight.add( button );
-	buttonLight.position.set( 6, - 0.5, 9.95 );
+	buttonLight.position.set( 6, - 0.5, DIMENSION.z / 2 - SWITCHDEPTH / 2 );
 
 	room.add( buttonLight );
 
 	// Add a mirror
 
-	mirrorSurfaceGeometry = new THREE.PlaneBufferGeometry( 18, 18 );
+	let MIRRORWIDTH = 18;
+	let MIRRORHEIGHT = 18;
+	let MIRRORDEPTH = 0.125;
+
+	mirrorSurfaceGeometry = new THREE.PlaneBufferGeometry(
+		MIRRORWIDTH,
+		MIRRORHEIGHT
+	);
 	mirrorSurface = new THREE.Reflector( mirrorSurfaceGeometry, {
 		textureWidth: window.innerWidth * window.devicePixelRatio,
 		textureHeight: window.innerWidth * window.devicePixelRatio,
 		recursion: 1
 	} );
 
-	mirrorSurface.position.z = 0.0635;
+	mirrorSurface.position.z = MIRRORDEPTH / 2;
 
-	mirrorGeometry = new THREE.BoxGeometry( 18, 18, 0.124 );
+	mirrorGeometry = new THREE.BoxGeometry(
+		MIRRORWIDTH,
+		MIRRORHEIGHT,
+		MIRRORDEPTH - OFFSET
+	);
 	mirrorMaterial = new THREE.MeshBasicMaterial( { color: 0x222222 } );
 	mirrorMesh = new THREE.Mesh( mirrorGeometry, mirrorMaterial );
 
-	mirrorMesh.position.z = - 0.001;
+	mirrorMesh.position.z = - OFFSET;
 
 	mirror = new THREE.Object3D();
 	mirror.name = "Mirror";
 	mirror.add( mirrorSurface, mirrorMesh );
 
 	mirror.rotation.y = Math.PI / 2;
-	mirror.position.x = - 14.938;
+	mirror.position.x = - ( DIMENSION.x / 2 - ( MIRRORDEPTH - OFFSET ) / 2 );
 
 	mirrorSurface.castShadow = mirrorMesh.castShadow = true;
 
@@ -401,7 +451,7 @@ function init() {
 
 	// Lighting
 
-	ambient = new THREE.AmbientLight( 0x333333 );
+	ambient = new THREE.AmbientLight( NORMALROOMAMBIENT );
 
 	bulbGeometry = new THREE.SphereBufferGeometry( 1, 50, 50 );
 	bulbMaterial = new THREE.MeshStandardMaterial( {
@@ -422,13 +472,6 @@ function init() {
 	point.userData = { isOn: true };
 
 	room.add( ambient, point );
-
-	// Helpers
-
-	// firstView = new THREE.CameraHelper( first );
-	// firstView.visible = camera == third;
-	//
-	// room.add( firstView );
 
 	// Raycasting setup
 
@@ -460,6 +503,11 @@ function switchLight() {
 	buttonMaterial.setValues( {
 		emissive: buttonLight.color
 	} );
+
+	// If the room's door is opened, change the room's ambient
+
+	if ( ! doorWithKnobs.userData.isClosed )
+		ambient.color = isLightOn ? NORMALROOMAMBIENT : OUTSIDELIGHTEDAMBIENT;
 
 }
 
@@ -525,14 +573,18 @@ function raycast() {
 				if ( doorWithKnobs.userData.isClosed ) {
 
 					doorWithKnobs.position.x = 0;
-					doorWithKnobs.position.z = 10;
+					doorWithKnobs.position.z = DIMENSION.z / 2;
 					doorWithKnobs.rotation.y = 0;
+					ambient.color = NORMALROOMAMBIENT;
 
 				} else {
 
-					doorWithKnobs.position.x = - 4.5;
-					doorWithKnobs.position.z = 5.5;
+					doorWithKnobs.position.x = - ( DOORWIDTH / 2 );
+					doorWithKnobs.position.z = DIMENSION.z / 2 - DOORWIDTH / 2;
 					doorWithKnobs.rotation.y = Math.PI / 2;
+					ambient.color = point.userData.isOn
+						? NORMALROOMAMBIENT
+						: OUTSIDELIGHTEDAMBIENT;
 
 				}
 
@@ -555,7 +607,6 @@ function render( event ) {
 
 	} else {
 
-		// firstView.update();
 		orbit.update();
 
 	}
