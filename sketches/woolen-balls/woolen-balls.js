@@ -6,6 +6,7 @@ var scene, camera, renderer, controls; // Scene, camera, renderer, and controls
 var ground, WoolenBall, balls; // Meshes
 var loader, porcelainWhite, wool01, wool02, wool03; // Textures
 var ambient, spotLight01, spotLight02; // Lights
+var helper01, helper02;
 
 var aspect = window.innerWidth / window.innerHeight;
 var canvas = document.createElement( "canvas" );
@@ -27,7 +28,7 @@ function init() {
 	// Set up the scene, the camera, the renderer, and the controls
 
 	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera( 75, aspect, 0.1, 2000 );
+	camera = new THREE.PerspectiveCamera( 75, aspect, 0.001, 100 );
 	renderer = new THREE.WebGLRenderer( {
 		canvas: canvas,
 		context: context,
@@ -36,13 +37,15 @@ function init() {
 	controls = new OrbitControls( camera, renderer.domElement );
 
 	scene.background = new THREE.Color( 0xdddddd );
-	camera.position.set( 4, 8, 14 );
+	camera.position.set( - 0.03, 0.1, 0.2 );
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.shadowMap.enabled = true;
 	renderer.physicallyCorrectLights = true;
-	controls.minDistance = 15;
-	controls.maxDistance = 25;
+	renderer.gammaInput = true;
+	renderer.gammaOutput = true;
+	controls.minDistance = 0.15;
+	controls.maxDistance = 0.5;
 	controls.enablePan = false;
 	controls.maxPolarAngle = Math.PI / 2 - 0.05;
 
@@ -54,9 +57,9 @@ function init() {
 
 	loader = new THREE.TextureLoader();
 
-	porcelainWhite = loader.load(
-		"../../assets/textures/porcelain-white/matcap-porcelain-white.jpg"
-	);
+	loader.setPath( "../../assets/textures/" );
+
+	porcelainWhite = loader.load( "porcelain-white/matcap-porcelain-white.jpg" );
 	material = new THREE.MeshMatcapMaterial( { matcap: porcelainWhite } );
 	geometry = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
 
@@ -67,40 +70,36 @@ function init() {
 
 	// Woolen balls
 
-	let wool01TextureUrl = "../../assets/textures/wool-01/";
-	let wool02TextureUrl = "../../assets/textures/wool-02/";
-	let wool03TextureUrl = "../../assets/textures/wool-03/";
-
 	wool01 = new THREE.MeshStandardMaterial( {
 		roughness: 1,
 		metalness: 0,
-		map: loader.load( wool01TextureUrl + "color.jpg" ),
-		aoMap: loader.load( wool01TextureUrl + "ao.jpg" ),
-		bumpMap: loader.load( wool01TextureUrl + "height.jpg" ),
-		normalMap: loader.load( wool01TextureUrl + "normal.jpg" ),
-		roughnessMap: loader.load( wool01TextureUrl + "roughness.jpg" )
+		map: loader.load( "wool-01/color.jpg" ),
+		aoMap: loader.load( "wool-01/ao.jpg" ),
+		bumpMap: loader.load( "wool-01/height.jpg" ),
+		normalMap: loader.load( "wool-01/normal.jpg" ),
+		roughnessMap: loader.load( "wool-01/roughness.jpg" )
 	} );
 
 	wool02 = wool01.clone();
 	wool02.setValues( {
-		map: loader.load( wool02TextureUrl + "color.jpg" ),
-		aoMap: loader.load( wool02TextureUrl + "ao.jpg" ),
-		bumpMap: loader.load( wool02TextureUrl + "height.jpg" ),
-		normalMap: loader.load( wool02TextureUrl + "normal.jpg" ),
-		roughnessMap: loader.load( wool02TextureUrl + "roughness.jpg" )
+		map: loader.load( "wool-02/color.jpg" ),
+		aoMap: loader.load( "wool-02/ao.jpg" ),
+		bumpMap: loader.load( "wool-02/height.jpg" ),
+		normalMap: loader.load( "wool-02/normal.jpg" ),
+		roughnessMap: loader.load( "wool-02/roughness.jpg" )
 	} );
 
 	wool03 = wool02.clone();
 	wool03.setValues( {
-		map: loader.load( wool03TextureUrl + "color.jpg" ),
-		aoMap: loader.load( wool03TextureUrl + "ao.jpg" ),
-		bumpMap: loader.load( wool03TextureUrl + "height.jpg" ),
-		normalMap: loader.load( wool03TextureUrl + "normal.jpg" ),
-		roughnessMap: loader.load( wool03TextureUrl + "roughness.jpg" )
+		map: loader.load( "wool-03/color.jpg" ),
+		aoMap: loader.load( "wool-03/ao.jpg" ),
+		bumpMap: loader.load( "wool-03/height.jpg" ),
+		normalMap: loader.load( "wool-03/normal.jpg" ),
+		roughnessMap: loader.load( "wool-03/roughness.jpg" )
 	} );
 
 	let wools = [ wool01, wool02, wool03 ];
-	let woolenBallRadius = 4;
+	let woolenBallRadius = 0.05;
 	geometry = new THREE.SphereBufferGeometry( woolenBallRadius, 50, 50 );
 
 	WoolenBall = function (
@@ -124,24 +123,35 @@ function init() {
 	balls = new THREE.Group();
 	balls.name = "Woolen balls";
 
-	balls.add( new WoolenBall( 0, - 4, wool01 ) );
-	balls.add( new WoolenBall( - 4.5, 4, wool02 ) );
-	balls.add( new WoolenBall( 4.5, 4, wool03 ) );
+	balls.add( new WoolenBall( - 0.05, 0, wool01 ) );
+	balls.add( new WoolenBall( 0.05, - 0.06, wool02 ) );
+	balls.add( new WoolenBall( 0.05, 0.06, wool03 ) );
 
 	scene.add( balls );
 
 	// Add lights
 
 	ambient = new THREE.AmbientLight( 0x333333 );
-	spotLight01 = new THREE.SpotLight( 0xffffff, 150 );
-	spotLight02 = new THREE.SpotLight( 0xffffff, 150 );
+	spotLight01 = new THREE.SpotLight( 0xffffff, 1 );
+	spotLight02 = new THREE.SpotLight( 0xffffff, 1 );
 
-	spotLight01.position.set( - 30, 50, 30 );
-	spotLight02.position.set( 30, 35, 30 );
+	// Lights' transforms
+
+	spotLight01.position.set( - 0.3, 0.5, 0.3 );
+	spotLight02.position.set( 0.3, 0.35, 0.3 );
 	spotLight01.angle = spotLight02.angle = 0.35;
 	spotLight01.target = spotLight02.target = balls;
 
-	scene.add( ambient, spotLight01, spotLight02 );
+	// Physically correct lights
+
+	spotLight01.distance = spotLight02.distance = Infinity;
+	spotLight01.decay = spotLight02.decay = 2;
+	spotLight01.power = spotLight02.power = 10;
+
+	helper01 = new THREE.SpotLightHelper( spotLight01 );
+	helper02 = new THREE.SpotLightHelper( spotLight02 );
+
+	scene.add( ambient, spotLight01, spotLight02, helper01, helper02 );
 
 	// Event listeners
 
@@ -154,7 +164,9 @@ function render() {
 	requestAnimationFrame( render );
 
 	controls.update();
-	camera.lookAt( balls.position );
+	helper01.update();
+	helper02.update();
+	camera.lookAt( 0, 0.05, 0 ); // Look at the balls' center
 
 	renderer.render( scene, camera );
 
