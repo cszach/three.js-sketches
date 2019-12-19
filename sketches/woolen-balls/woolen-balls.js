@@ -6,7 +6,6 @@ var scene, camera, renderer, controls; // Scene, camera, renderer, and controls
 var ground, WoolenBall, balls; // Meshes
 var loader, porcelainWhite, wool01, wool02, wool03; // Textures
 var ambient, spotLight01, spotLight02; // Lights
-var helper01, helper02;
 
 var aspect = window.innerWidth / window.innerHeight;
 var canvas = document.createElement( "canvas" );
@@ -148,10 +147,7 @@ function init() {
 	spotLight01.decay = spotLight02.decay = 2;
 	spotLight01.power = spotLight02.power = 10;
 
-	helper01 = new THREE.SpotLightHelper( spotLight01 );
-	helper02 = new THREE.SpotLightHelper( spotLight02 );
-
-	scene.add( ambient, spotLight01, spotLight02, helper01, helper02 );
+	scene.add( ambient, spotLight01, spotLight02 );
 
 	// Event listeners
 
@@ -164,8 +160,6 @@ function render() {
 	requestAnimationFrame( render );
 
 	controls.update();
-	helper01.update();
-	helper02.update();
 	camera.lookAt( 0, 0.05, 0 ); // Look at the balls' center
 
 	renderer.render( scene, camera );
