@@ -1,9 +1,16 @@
 # woolen-balls
 
 Some woolen balls on a porcelain floor that I've created. Lights are (hopefully)
-physically correct. Woolen balls look peacefully perhaps.
+physically correct. Woolen balls look peacefully perhaps. In real-world scale,
+each of the woolen balls is 10cm in diameter.
 
 ![thumbnail](thumbnail.png)
+
+## Interaction
+
+There is an orbit control which you can use by using your computer mouse. Mouse
+wheel for zooming in and out, left mouse for orbiting around. Panning is
+disabled.
 
 ## To-do's
 
@@ -21,5 +28,7 @@ physically correct. Woolen balls look peacefully perhaps.
 [milos]: https://milosparipovic.com
 
 - Textures of wools (can be found [here][texture-01], [here][texture-02], and
-  [here][texture-03]) are from Textures.com
-- [White porcelain matcap][matcap] courtesy of [Milos Paripovic][milos]
+  [here][texture-03]) are from Textures.com, these may not be redistributed by
+  default
+- [White porcelain matcap][matcap] courtesy of [Milos Paripovic][milos], free
+  to use and redistribute by any means
