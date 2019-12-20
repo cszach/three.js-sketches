@@ -33,5 +33,5 @@ Below is the sketch's preview.
 
 [link]: https://codepen.io/rachsmith/
 
-Thanks are due to [Rachel Smith][link] for the three.js scene screenshoted
+Thanks are due to [Rachel Smith][link] for the three.js scene screenshotted
 above.
