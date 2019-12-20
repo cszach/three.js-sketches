@@ -31,6 +31,7 @@ Below is the sketch's preview.
 
 ## Acknowledgements
 
-[link]: www.example.com
+[link]: https://codepen.io/rachsmith/
 
-I would like to thank [SpaceAssets][link] for the textures.
+Thanks are due to [Rachel Smith][link] for the three.js scene screenshoted
+above.
