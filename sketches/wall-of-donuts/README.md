@@ -1,5 +1,7 @@
 # wall-of-donuts
 
+![thumbnail](thumbnail.png)
+
 A wall with donuts sticked on it, because why not?
 
 Move your mouse around and you will also find out that you are actually placed
@@ -7,8 +9,6 @@ inside a room with some other interesting stuff. The room has 4 walls, a floor,
 and a ceilling (a typical room). The wall on the left side has a big mirror on
 it (`Reflector`). Right behind you, there are some meshes that are just there
 for fun, and most importantly: a door to Reality.
-
-![thumbnail](thumbnail.png)
 
 ## Interaction
 

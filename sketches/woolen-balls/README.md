@@ -1,10 +1,10 @@
 # woolen-balls
 
+![thumbnail](thumbnail.png)
+
 Some woolen balls on a porcelain floor that I've created. Lights are (hopefully)
 physically correct. Woolen balls look peacefully perhaps. In real-world scale,
 each of the woolen balls is 10cm in diameter.
-
-![thumbnail](thumbnail.png)
 
 ## Interaction
 

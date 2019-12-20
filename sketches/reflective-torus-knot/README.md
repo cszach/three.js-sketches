@@ -1,9 +1,9 @@
 # reflective-torus-knot
 
+![thumbnail](thumbnail.png)
+
 What I made while learning the very basics of cube mapping in three.js. It's
 not really something that I would call a sketch, I just thought it was nice.
-
-![thumbnail](thumbnail.png)
 
 ## Interaction
 

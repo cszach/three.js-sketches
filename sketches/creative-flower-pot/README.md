@@ -1,11 +1,11 @@
 # creative-flower-pot
 
+![thumbnail](thumbnail.png)
+
 A creative flower pot, based on one I drew for one of my beloved teachers on
 Vietnamese Teachers' Day 2019. This 3D version does not yet look exactly what I
 drew e.g. the stems were originally drawn more dashed-like. I will try to
 improve this as I learn more of three.js.
-
-![thumbnail](thumbnail.png)
 
 ## Interaction
 
