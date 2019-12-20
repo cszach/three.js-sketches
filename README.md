@@ -54,9 +54,8 @@ the thumbnail to see the sketch's source code. Enjoy! :lollipop:
 
 Copyright :copyright: 2019 by Nguyen Hoang Duong (<you_create@protonmail.com>).
 
-Currently the source code is not licensed. See [this page][no-lic] by GitHub to
-know what you are supposed to do. You can suggest a better license for this
-project by opening a new issue.
+Currently the source code is not licensed and is meant for educational purposes.
+See [this page][no-lic] by GitHub to know what you are supposed to do. You can suggest a better license for this project by opening a new issue.
 
 ### Textures
 
@@ -66,3 +65,7 @@ please visit www.textures.com for more information.
 
 Some textures are made by Emil Persson (a.k.a. Humus). Those textures are
 licensed under the Creative Commons Attribution 3.0 Unported license.
+
+There are also textures from other authors. The _Acknowledgements_ section of a
+sketch's README file provides detailed information about who owns the textures
+used by the sketch as well as licensing information.
