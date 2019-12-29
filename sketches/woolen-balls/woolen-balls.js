@@ -1,6 +1,6 @@
-import { WEBGL } from "../../libm/WebGL.js";
-import * as THREE from "../../libm/three.module.js";
-import { OrbitControls } from "../../libm/OrbitControls.js";
+import { WEBGL } from "../../three.js/examples/jsm/WebGL.js";
+import * as THREE from "../../three.js/build/three.module.js";
+import { OrbitControls } from "../../three.js/examples/jsm/controls/OrbitControls.js";
 
 var scene, camera, renderer, controls; // Scene, camera, renderer, and controls
 var ground, WoolenBall, balls; // Meshes

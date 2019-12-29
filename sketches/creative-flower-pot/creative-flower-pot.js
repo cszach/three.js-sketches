@@ -224,14 +224,14 @@ function FlowerWithStem(
 FlowerWithStem.prototype = Object.create( THREE.Object3D.prototype );
 FlowerWithStem.prototype.constructor = FlowerWithStem;
 
-if ( WEBGL.isWebGL2Available() ) {
+if ( THREE.WEBGL.isWebGL2Available() ) {
 
 	init();
 	render();
 
 } else {
 
-	document.body.appendChild( WEBGL.getWebGLErrorMessage() );
+	document.body.appendChild( THREE.WEBGL.getWebGLErrorMessage() );
 
 }
 
