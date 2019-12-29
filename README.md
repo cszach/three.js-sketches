@@ -40,8 +40,8 @@ the thumbnail to see the sketch's source code. Enjoy! :lollipop:
   according to Mr. Doob's coding style™
 - `.imgbotconfig`: ImgBot configuration file
 - `package.json`: The project's manifest, includes dependencies info
-- `lib/`: JavaScript libraries used in the sketches
-- `libm/`: JavaScript modules used in the sketches
+- `three.js`: The three.js repository but only the files that are used by the
+  sketches are presented
 - `assets/`: Assets (including textures) used by the sketches
 - `common/`: Other common files and templates
 - `sketches/`: The sketches, each child directory for one sketch
