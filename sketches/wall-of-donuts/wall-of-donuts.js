@@ -118,14 +118,14 @@ function Room( dimension, wallMaterial, floorMaterial, ceilingMaterial ) {
 Room.prototype = Object.create( THREE.Group.prototype );
 Room.prototype.constructor = Room;
 
-if ( WEBGL.isWebGL2Available() ) {
+if ( THREE.WEBGL.isWebGL2Available() ) {
 
 	init();
 	render();
 
 } else {
 
-	document.body.appendChild( WEBGL.getWebGL2ErrorMessage() );
+	document.body.appendChild( THREE.WEBGL.getWebGL2ErrorMessage() );
 
 }
 
@@ -134,7 +134,7 @@ function init() {
 	// Set up the scene, the camera, the renderer, and the controls
 
 	scene = new THREE.Scene();
-	first = new THREE.PerspectiveCamera( 50, aspect, 0.1, 100 );
+	first = new THREE.PerspectiveCamera( 75, aspect, 0.1, 100 );
 	firstView = new THREE.CameraHelper( first );
 	third = new THREE.PerspectiveCamera( 75, aspect, 0.1, 1000 );
 	renderer = new THREE.WebGLRenderer( {
