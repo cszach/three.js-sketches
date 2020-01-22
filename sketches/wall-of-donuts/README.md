@@ -33,6 +33,9 @@ for fun, and most importantly: a door to Reality.
 - [ ] Find a better type of mouse control (what is looked for is something
       similar to `FlyControls`, but just no z-rotation on the camera)
 
+> **Note**: `wall-of-donuts.draft.js` is an attempt to physically correct things
+in this sketch, however it currently has several problems.
+
 ## Acknowledgements
 
 [dawid]: https://unsplash.com/@davealmine
