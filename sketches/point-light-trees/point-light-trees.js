@@ -44,27 +44,27 @@ function init() {
 	addCube( scene );
 	addPointLight( scene, { x: 5, y: 5, z: 5 } );
 
-	// EVENT LISTENERS
-
-	canvas.addEventListener( 'resize', onCanvasResize );
-
-}
-
-function onCanvasResize() {
-
-	console.log( "Yeah!" );
-	renderer.setSize( canvas.clientWidth, canvas.clientHeight );
-	camera.aspect = canvas.clientWidth / canvas.clientHeight;
-	camera.updateProjectionMatrix();
-
 }
 
 function render() {
 
 	requestAnimationFrame( render );
 
+	if ( canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight ) {
+
+		onCanvasResize();
+
+	}
 	controls.update();
 
 	renderer.render( scene, camera );
+
+}
+
+function onCanvasResize() {
+
+	renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+	camera.aspect = canvas.clientWidth / canvas.clientHeight;
+	camera.updateProjectionMatrix();
 
 }
