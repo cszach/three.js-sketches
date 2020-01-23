@@ -1,0 +1,3 @@
+[submodule "lib/three.js-pilot"]
+	path = lib/three.js-pilot
+	url = https://github.com/you-create/three.js-pilot.git
