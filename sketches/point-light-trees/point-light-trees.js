@@ -1,10 +1,12 @@
 // GLOBALS
 
 let scene, camera, renderer, controls;
+let ground;
 
 // Scene, camera & renderer settings
 
-let background = new THREE.Color( 0xdddddd );
+const background = new THREE.Color( 0xdddddd );
+const fog = new THREE.FogExp2( 0xdddddd, 0.08 );
 let canvas = document.querySelector( '#app' );
 let context = canvas.getContext( 'webgl2', { alpha: false } );
 let antialias = true;
@@ -35,14 +37,14 @@ function init() {
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 	scene.background = background;
+	scene.fog = fog;
 	camera.position.set( 0, 3, 15 );
 	renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	controls.enableDamping = true;
 
-	addPlane( scene );
-	addCube( scene );
-	addPointLight( scene, { x: 5, y: 5, z: 5 } );
+	// eslint-disable-next-line no-undef
+	ground = addPlane( scene );
 
 }
 
