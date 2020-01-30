@@ -6,11 +6,18 @@
  * The first three arguments govern the meshes of the trunk, the branches, and
  * the leaves, and must be in the form:
  *   {
- *       geometryValues,
- *       material
+ *       geometryValues, // Object of arguments necessary for the geometry
+ *       material // The material for the trunk/branches/leaves
  *   }
- * where geoValues is an object of arguments necessary to construct the geometry
- * and material is the material for the corresponding mesh.
+ *
+ * The angle parameter governs the angles created by the branches and the trunk
+ * per row. It must be an object in the form:
+ * {
+ *      start, // The angle of the first branch on the row
+ *      end // The angle of the last branch on the row
+ * }
+ *
+ * Measurements in this object should be in degrees and not radians.
  *
  * The geometries of the trunk, the branches, and the leaves are
  * CylinderBufferGeometry, CylinderBufferGeometry, SphereBufferGeometry,
@@ -21,26 +28,25 @@
  * @param {object} leafData An object of the form { geometryValues, material }
  * @param {object} lightColors An array of hexadecimals that define the colors
  * for the lights
- * @param {number} angle The size of the angle created by the axes of the branch
- * and the tree trunk
+ * @param {number} angle An object of the form { start, end }
  * @param {number} amountPerRow Number of branches per row
  * @param {number} distance Distance between each row
- * @param {boolean} animate Animate the tree?
+ * @param {boolean} isAnimated Animate the tree?
  */
 function PLTree(
 	trunkData = { geometryValues: null, material: null },
 	branchData = { geometryValues: null, material: null },
 	leafData = { geometryValues: null, material: null },
 	lightColors = [ 0xff0000, 0x00ff00, 0x0000ff ],
-	angle = 75,
-	amountPerRow = 3,
+	angle = { start: 120, end: 60 },
+	amountPerRow = 4,
 	distance = 0.5,
-	animate = false
+	isAnimated = false
 ) {
 
 	THREE.Group.apply( this, arguments );
+
 	this.name = "PLTree";
-	this.animate = animate;
 
 	// Define variables
 
@@ -116,6 +122,7 @@ function PLTree(
 	trunk.name = "Trunk";
 	branchProto.name = "Branch";
 	leafProto.name = "Leaf";
+	lightProto.name = "Light";
 
 	this.add( trunk );
 
@@ -125,7 +132,7 @@ function PLTree(
 	let branchProtoBox,
 		branchBoxSize = new THREE.Vector3();
 
-	branchProto.rotation.z = - THREE.Math.degToRad( angle );
+	// branchProto.rotation.z = - THREE.Math.degToRad( angle );
 	branchProtoBox = new THREE.Box3().setFromObject( branchProto );
 	branchProtoBox.getSize( branchBoxSize );
 
@@ -133,14 +140,23 @@ function PLTree(
 
 	// Placements
 
+	let branch, leaf, light, color;
+
 	let i = 0; // The index to choose colors from lightColors
 	let h = t.height * ( 1 / 2 ); // The distance from the ground to the nearest row of branches
+	let angleStep = ( angle.end - angle.start ) / ( amountPerRow - 1 );
 	let numberOfRows = Math.trunc( ( t.height - h ) / distance ) + 1;
-	let branch, leaf, light, color;
 
 	for ( let row = 0; row < numberOfRows; row ++ ) {
 
 		// Cache
+		//
+		// branchPosY: y-position of the branches on this row
+		// trunkRadius: The radius of the trunk where the branches on this row
+		//   are sticked to
+		// branchAxis: A vector that is parallel with the branch, used to
+		//   translate the branch later
+		// translateDistance: The amount of distance to translate the branch
 
 		let branchPosY = - ( trunkHeight / 2 ) + h + ( distance * row );
 		let trunkRadius = trunkRadiusBottom + ( trunkRadiiDiff * ( branchPosY / trunkHeight ) );
@@ -167,6 +183,7 @@ function PLTree(
 
 			branch.position.y = branchPosY;
 			branch.rotation.y = ( rowBranch * Math.PI * 2 ) / amountPerRow;
+			branch.rotation.z = - THREE.Math.degToRad( angle.start + angleStep * rowBranch );
 
 			// Translate the branch so that the branch looks like it is sticked
 			// on the trunk
@@ -181,15 +198,136 @@ function PLTree(
 
 	}
 
-	// Compute the height of the tree
+	// PLTree's custom attributes and methods
 
 	this.height = null;
+	this.isAnimated = isAnimated;
+	this.animation = null;
+
+	/**
+	 * Compute the height of the tree and update the instance's height attribute
+	 *
+	 * @return {object} The bounding box of the tree
+	 */
 	this.computeHeight = function () {
 
 		let treeBox = new THREE.Box3().setFromObject( this );
 		this.height = treeBox.getSize().y;
 
 		return treeBox.clone();
+
+	};
+
+	/**
+	 * Return a list of branches on this tree
+	 *
+	 * @return {object} List of branches on this tree as Object3Ds
+	 */
+	this.getBranches = function () {
+
+		return this.children[ 0 ].children;
+
+	};
+
+	/**
+	 * Return a branch or a leaf or a light on this tree
+	 *
+	 * @param {number} what 1 = get branch, 2 = get leaf, 3 = get light
+	 * @param {number} which The index of the branch
+	 */
+	this.get = function ( what, which ) {
+
+		switch ( what ) {
+
+			case 1:
+				return this.children[ 0 ].children[ which ];
+			case 2:
+				return this.get( 1, which ).getObjectByName( "Leaf" );
+			case 3:
+				return this.get( 2, which ).getObjectByName( "Light" );
+			default:
+				console.warn( "PLTree.get: First argument must be either 1, 2, or 3" );
+
+		}
+
+	};
+
+	/**
+	 * Iterate over each branch on this tree, executing a function in every
+	 * iteration
+	 *
+	 * The function that is executed per iteration also accepts these arguments:
+	 *   - i: The index of the current branch (0-indexed)
+	 *   - branch: The branch (as an Object3D)
+	 *   - leaf: The leaf on this branch (as an Object3D)
+	 *   - light: The light on this branch (as an Object3D)
+	 *
+	 * @param {function} func The function to execute for every branch iterated
+	 */
+	this.forEachBranch = function ( func ) {
+
+		this.getBranches().forEach( function ( branch, i ) {
+
+			func( i, branch, this.get( 2, i ), this.get( 3, i ) );
+
+		}, this );
+
+	};
+
+	/**
+	 * Remove a branch on this tree
+	 *
+	 * Note that this function does not dispose the branch, it only makes the
+	 * branch invisible by setting its visible attribute to false.
+	 *
+	 * @param {number} i The index of the branch to remove
+	 * @return {object} The removed branch
+	 */
+	this.removeBranch = function ( i ) {
+
+		let target = this.getBranches()[ i ];
+		target.visible = false;
+
+		return target;
+
+	};
+
+	/**
+	 * Remove a leaf on this tree
+	 *
+	 * Note that this function does not dispose the leaf, it only makes the
+	 * leaf invisible by setting its visible attribute to false. Also, making a
+	 * leaf invisible also makes the corresponding light invisible.
+	 *
+	 * @param {number} i The index of the branch that has the leaf to remove
+	 * @return {object} The removed leaf
+	 */
+	this.removeLeaf = function ( i ) {
+
+		let target = this.getBranches()[ i ].getObjectByName( 'Leaf' );
+		target.visible = false;
+
+		return target;
+
+	};
+
+	/**
+	 * Set a function to run every time this.animate is called
+	 *
+	 * @param {function} animation The function to execute every time this.animate is called
+	 */
+	this.setAnimation = function ( animation ) {
+
+		this.animation = animation;
+
+	};
+
+	/**
+	 * Execute the function set via this.setAnimation
+	 */
+	this.animate = function () {
+
+		this.animation();
 
 	};
 
