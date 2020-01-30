@@ -1,6 +1,6 @@
 // GLOBALS
 
-let scene, camera, renderer, controls;
+let scene, camera, renderer, controls, clock;
 let tree;
 
 // Scene, camera & renderer settings
@@ -25,7 +25,7 @@ if ( THREE.WEBGL.isWebGL2Available() ) {
 
 function init() {
 
-	// SCENE, CAMERA, RENDERER, CONTROLS
+	// SCENE, CAMERA, RENDERER, CONTROLS, CLOCK
 
 	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
@@ -35,10 +35,11 @@ function init() {
 		antialias
 	} );
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	clock = new THREE.Clock();
 
 	scene.background = background;
 	scene.fog = fog;
-	camera.position.set( 0, 1, 3 );
+	camera.position.set( 0, 3, 10 );
 	renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	controls.enableDamping = true;
@@ -48,21 +49,39 @@ function init() {
 
 	tree.computeHeight();
 	tree.position.y = tree.height / 2;
+	tree.setAnimation( function () {
+
+		let time = clock.getElapsedTime();
+
+		this.forEachBranch( function ( i, branch, leaf, light ) {
+
+			light.visible = ( ( i - Math.trunc( time ) % 12 ) % 12 === 0 );
+			leaf.material.setValues( {
+
+				emissive: ( light.visible ) ? light.color.getHex() : 0x000000
+
+			} );
+
+		} );
+
+	} );
+
+	camera.lookAt( 0, tree.height / 2, 0 );
 
 	scene.add( tree );
 
 }
 
-function animte() {
+function animate() {
 
-	tree.rotation.y += 0.01;
+	tree.animate();
 
 }
 
 function render() {
 
 	requestAnimationFrame( render );
-	animte();
+	animate();
 
 	if ( canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight ) {
 
