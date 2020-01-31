@@ -15,7 +15,7 @@ let fov = 75, aspect = canvas.clientWidth / canvas.clientHeight, near = 0.1, far
 if ( THREE.WEBGL.isWebGL2Available() ) {
 
 	init();
-	render();
+	animate();
 
 } else {
 
@@ -44,11 +44,14 @@ function init() {
 	renderer.setPixelRatio( window.devicePixelRatio );
 	controls.enableDamping = true;
 
+	// ENVIRONMENT
+
 	addPlane( scene ); // eslint-disable-line no-undef
+
+	// TREES
+
 	tree = new PLTree(); // eslint-disable-line no-undef
 
-	tree.computeHeight();
-	tree.position.y = tree.height / 2;
 	tree.setAnimation( function () {
 
 		let time = clock.getElapsedTime();
@@ -66,31 +69,45 @@ function init() {
 
 	} );
 
-	camera.lookAt( 0, tree.height / 2, 0 );
-
+	tree.plant( 0, 0, 0, false );
 	scene.add( tree );
 
-}
 
-function animate() {
+	// CreateJS setup
 
-	tree.animate();
+	createjs.Ticker.timingMode = createjs.Ticker.RAF;
+
+	renderer.setAnimationLoop( render );
 
 }
 
 function render() {
 
-	requestAnimationFrame( render );
-	animate();
+	// If the canvas is resized, adjust the renderer and the camera's settings
 
 	if ( canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight ) {
 
 		onCanvasResize();
 
 	}
+
+	// In-callback animations
+
+	tree.animate();
+
+	// Updates
+
 	controls.update();
 
+	// Render the scene
+
 	renderer.render( scene, camera );
+
+}
+
+function animate() {
+
+	tree.grow();
 
 }
 
