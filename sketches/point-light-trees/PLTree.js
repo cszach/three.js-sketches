@@ -1,3 +1,5 @@
+/* eslint no-undef: "off" */
+
 /**
  * Point-light tree (PLTree) object
  *
@@ -200,9 +202,47 @@ function PLTree(
 
 	// PLTree's custom attributes and methods
 
-	this.height = null;
-	this.isAnimated = isAnimated;
-	this.animation = null;
+	this.trunk = this.getObjectByName( "Trunk" ); // The tree trunk
+	this.height = null; // The height of the tree
+	this.trunkHeight = this.trunk.geometry.parameters.height; // The tree trunk's height
+	this.isAnimated = isAnimated; // Run this.animation inside animation loop?
+	this.animation = null; // Function to animate this tree
+
+	/**
+	 * Plant the tree
+	 *
+	 * If grown is false, sets the tree's scale to 0. In order to grow it,
+	 * call this.grow.
+	 *
+	 * @param {number} x The x position for the tree
+	 * @param {number} y The y coordinate of the ground
+	 * @param {number} z The z position for the tree
+	 * @param {boolean} grown Plant the grown tree?
+	 */
+	this.plant = function ( x = 0, y = 0, z = 0, grown = false ) {
+
+		this.position.set( x, y, z );
+		this.trunk.position.y = y + this.trunkHeight / 2;
+
+		this.grown = grown;
+		if ( ! this.grown ) this.scale.set( 0, 0, 0 );
+
+	};
+
+	/**
+	 * Grow the planted tree with the help of TweenJS
+	 *
+	 * Growing a planted tree means running its scale attribute from 0 to 1.
+	 *
+	 * @param {number} duration How long will the tree grow? (in ms)
+	 */
+	this.grow = function ( duration = 300, ease = createjs.Ease.quadInOut ) {
+
+		return createjs.Tween.get( this.scale )
+			.wait( 5000 )
+			.to( { x: 1, y: 1, z: 1 }, duration, ease );
+
+	};
 
 	/**
 	 * Compute the height of the tree and update the instance's height attribute
