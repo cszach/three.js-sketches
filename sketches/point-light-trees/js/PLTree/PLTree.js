@@ -33,7 +33,6 @@
  * @param {number} angle An object of the form { start, end }
  * @param {number} amountPerRow Number of branches per row
  * @param {number} distance Distance between each row
- * @param {boolean} isAnimated Animate the tree?
  */
 function PLTree(
 	trunkData = { geometryValues: null, material: null },
@@ -42,8 +41,7 @@ function PLTree(
 	lightColors = [ 0xff0000, 0x00ff00, 0x0000ff ],
 	angle = { start: 120, end: 60 },
 	amountPerRow = 4,
-	distance = 0.5,
-	isAnimated = false
+	distance = 0.5
 ) {
 
 	THREE.Group.apply( this, arguments );
@@ -203,9 +201,9 @@ function PLTree(
 	// PLTree's custom attributes and methods
 
 	this.trunk = this.getObjectByName( "Trunk" ); // The tree trunk
+	this.boundingBox = null; // The bounding box of the tree
 	this.height = null; // The height of the tree
 	this.trunkHeight = this.trunk.geometry.parameters.height; // The tree trunk's height
-	this.isAnimated = isAnimated; // Run this.animation inside animation loop?
 	this.animation = null; // Function to animate this tree
 
 	/**
@@ -245,16 +243,21 @@ function PLTree(
 	};
 
 	/**
-	 * Compute the height of the tree and update the instance's height attribute
-	 *
-	 * @return {object} The bounding box of the tree
+	 * Compute the bounding box of this tree and update its boundingBox attribute
+	 */
+	this.computeBoundingBox = function () {
+
+		this.boundingBox = new THREE.Box3().setFromObject( this );
+
+	};
+
+	/**
+	 * Compute the height of this tree and update its height attribute
 	 */
 	this.computeHeight = function () {
 
-		let treeBox = new THREE.Box3().setFromObject( this );
-		this.height = treeBox.getSize().y;
-
-		return treeBox.clone();
+		this.computeBoundingBox();
+		this.height = this.boundingBox.getSize().y;
 
 	};
 
