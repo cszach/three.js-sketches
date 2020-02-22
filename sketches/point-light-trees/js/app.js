@@ -2,8 +2,8 @@
 
 // GLOBALS
 
-let scene, camera, renderer, controls, clock;
-let trees, numberOfTrees = 10;
+let scene, camera, renderer, controls;
+let numberOfTrees = 1;
 
 // Scene, camera & renderer settings
 
@@ -31,20 +31,21 @@ function init() {
 	// SCENE, CAMERA, RENDERER, CONTROLS, CLOCK
 
 	scene = new THREE.Scene();
+	scene.background = background;
+	scene.fog = fog;
+
 	camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
+	camera.position.set( 0, 3, 10 );
+
 	renderer = new THREE.WebGLRenderer( {
 		canvas,
 		context,
 		antialias
 	} );
-	controls = new THREE.OrbitControls( camera, renderer.domElement );
-	clock = new THREE.Clock();
-
-	scene.background = background;
-	scene.fog = fog;
-	camera.position.set( 0, 3, 10 );
-	renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+	renderer.setSize( canvasWidth, canvasHeight );
 	renderer.setPixelRatio( window.devicePixelRatio );
+
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
 	controls.enableDamping = true;
 
 	// ENVIRONMENT
@@ -52,8 +53,6 @@ function init() {
 	addPlane( scene ); // eslint-disable-line no-undef
 
 	// TREES
-
-	trees = new Array();
 
 	// CreateJS setup
 

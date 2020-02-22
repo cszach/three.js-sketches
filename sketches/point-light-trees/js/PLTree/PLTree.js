@@ -233,11 +233,17 @@ function PLTree(
 	 * Growing a planted tree means running its scale attribute from 0 to 1.
 	 *
 	 * @param {number} duration How long will the tree grow? (in ms)
+	 * @param {number} wait Wait for how long before growing? (in ms)
+	 @ @param {function} ease Easing used for the growing animation
 	 */
-	this.grow = function ( duration = 300, ease = createjs.Ease.quadInOut ) {
+	this.grow = function (
+		duration = 300,
+		wait = 0,
+		ease = createjs.Ease.quadInOut
+	) {
 
 		return createjs.Tween.get( this.scale )
-			.wait( 5000 )
+			.wait( wait )
 			.to( { x: 1, y: 1, z: 1 }, duration, ease );
 
 	};
