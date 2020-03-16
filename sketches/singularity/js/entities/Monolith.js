@@ -1,17 +1,18 @@
-import * as THREE from '../../../three.js/build/three.module.js';
+import * as THREE from '../../../../three.js/build/three.module.js';
+import { MONOLITH_NAME } from '../constants.js';
 
 class Monolith {
 
-	constructor( x, y, z, width, height, depth, color, physics = false ) {
+	constructor( x, y, z, width, height, depth, material, physics = false ) {
 
 		this.position = { x, y, z };
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
-		this.color = color;
+		this.material = material;
 		this.physicallyCorrect = physics;
 
-		this.build( physics );
+		this.build( this.material, physics );
 
 	}
 
@@ -24,15 +25,15 @@ class Monolith {
 			this.width,
 			this.height,
 			this.depth,
-			this.color,
+			this.material,
 			this.physicallyCorrect
 		);
 
 	}
 
-	build( physics = false ) {
+	build( material = this.material, physics = false ) {
 
-		let geometry, material;
+		let geometry;
 
 		geometry = new THREE.BoxBufferGeometry(
 			this.width,
@@ -40,13 +41,8 @@ class Monolith {
 			this.depth
 		);
 
-		material = new THREE.MeshStandardMaterial( {
-			metalness: 0.5,
-			roughness: 0.5,
-			color: this.color
-		} );
-
 		this.mesh = new THREE.Mesh( geometry, material );
+		this.mesh.name = MONOLITH_NAME;
 		this.mesh.position.set( this.position.x, this.position.y, this.position.z );
 
 		if ( physics ) {

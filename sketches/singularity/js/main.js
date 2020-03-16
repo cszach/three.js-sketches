@@ -8,26 +8,31 @@
 
 // three.js
 
-import { WEBGL } from '../../three.js/examples/jsm/WebGL.js';
-import * as THREE from '../../three.js/build/three.module.js';
-import { OrbitControls } from '../../three.js/examples/jsm/controls/OrbitControls.js';
+import { WEBGL } from '../../../three.js/examples/jsm/WebGL.js';
+import * as THREE from '../../../three.js/build/three.module.js';
+import { OrbitControls } from '../../../three.js/examples/jsm/controls/OrbitControls.js';
 
 // App
 
-import { NONE, SOME, ALL, VISIBLES, INVISIBLES } from './js/constants.js';
-import { Singularity } from './js/Singularity.js';
-import { Monolith } from './js/Monolith.js';
-import { MonolithGenerator } from './js/MonolithGenerator.js';
-import { MonolithAnimator } from './js/MonolithAnimator.js';
-import { CanvasHelper } from '../../lib/misc/CanvasHelper.js';
+import { SINGULARITY_NAME, MONOLITHS_NAME, NONE, SOME, ALL, VISIBLES, INVISIBLES } from './constants.js';
+import { Singularity } from './entities/Singularity.js';
+import { Monolith } from './entities/Monolith.js';
+import { MonolithGenerator } from './facilities/MonolithGenerator.js';
+import { MonolithAnimator } from './facilities/MonolithAnimator.js';
+import { CanvasHelper } from '../../../lib/misc/CanvasHelper.js';
 
-let scene, camera, renderer, controls;
-let generator, animator; // Monoliths generator and animator
+let scene, camera, renderer, controls, raycaster, mouse;
+let monoliths, generator, animator; // Monoliths generator and animator
 let sphere; // Background sphere
+let userLight, userLightTarget; // Interactive light
+
+// Renderer's params
 
 let canvas = document.getElementById( 'app' );
 let context = canvas.getContext( 'webgl2', { alpha: false } );
 let canvasHelper;
+
+// ===============================
 
 if ( WEBGL.isWebGL2Available() ) {
 
@@ -39,6 +44,8 @@ if ( WEBGL.isWebGL2Available() ) {
 	document.body.appendChild( WEBGL.getWebGL2ErrorMessage() );
 
 }
+
+// ===============================
 
 function init() {
 
@@ -79,13 +86,45 @@ function init() {
 
 	// MESHES
 
-	// Monoliths & Singularity
+	// Monoliths
 
-	let monoliths = new THREE.Group();
+	monoliths = new THREE.Group();
+	let monolithMaterial = new THREE.MeshStandardMaterial( {
+		metalness: 0.8,
+		roughness: 0.5,
+		color: 0x000000
+	} );
+	let monolith = new Monolith( 0, 0, 0, 5, 5, 5, monolithMaterial, true );
+
+	monoliths.name = MONOLITHS_NAME;
 	scene.add( monoliths );
 
-	let singularity = new Singularity( 0.1, 0xffffff, 50, 50, 100000, true );
-	let monolith = new Monolith( 0, 0, 0, 5, 5, 5, 0x000000, true );
+	// Singularity's light
+
+	let light = new THREE.PointLight( 0xffffff, 1, Infinity, 2 );
+	light.power = 120000;
+
+	light.castShadow = true;
+	light.shadow.mapSize.width = light.shadow.mapSize.height = 2048;
+
+	// Singularity
+
+	let singularityMaterial = new THREE.MeshStandardMaterial( {
+		emissive: 0xffffff,
+		emissiveIntensity: light.intensity / Math.pow( 0.02, 2.0 ),
+		color: 0x000000
+	} );
+
+	let singularity = new Singularity(
+		0.1,
+		0xffffff,
+		50,
+		50,
+		singularityMaterial,
+		light
+	);
+	singularity.mesh.name = SINGULARITY_NAME;
+
 	let outerSphere = new THREE.Sphere( singularity.position, 12 );
 	let innerSphere = new THREE.Sphere( singularity.position, 8 );
 
@@ -102,7 +141,7 @@ function init() {
 	generator.hideMonolithsWithinThisSphere( innerSphere );
 	generator.createHelpers( INVISIBLES, 0xffca28 );
 
-	scene.add( singularity.mesh.clone() );
+	scene.add( singularity.mesh );
 
 	// Background sphere
 
@@ -118,6 +157,30 @@ function init() {
 
 	sphere = new THREE.Mesh( sphereGeo, sphereMat );
 	scene.add( sphere );
+
+	// User's interactive light
+
+	userLight = new THREE.SpotLight( 0xffffff, 1, Infinity, Math.PI / 8, 0.6, 2 );
+	userLightTarget = new THREE.Object3D();
+
+	userLight.power = 80000;
+	userLight.target = userLightTarget;
+	userLight.castShadow = true;
+	userLight.shadow.mapSize.width = userLight.shadow.mapSize.height = 2048;
+	userLight.visible = false;
+
+	scene.add( userLight, userLightTarget );
+
+	mouse = new THREE.Vector2();
+	raycaster = new THREE.Raycaster();
+
+	document.body.addEventListener( 'click', function () {
+
+		singularity.toggleLight();
+		userLight.visible = ! userLight.visible;
+
+	} );
+	document.body.addEventListener( 'mousemove', onMouseMove );
 
 	// Animation setup
 
@@ -155,6 +218,10 @@ function render( time ) {
 
 	animator.animate( time, 0.0005 );
 
+	// User's light
+
+	updateUserLight();
+
 	// Update things
 
 	generator.helpers.forEach( ( helper ) => {
@@ -168,6 +235,24 @@ function render( time ) {
 	// Render things
 
 	renderer.render( scene, camera );
+
+}
+
+function onMouseMove( event ) {
+
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+}
+
+function updateUserLight() {
+
+	if ( ! userLight.visible ) return;
+
+	userLight.position.copy( camera.position );
+
+	raycaster.setFromCamera( mouse, camera );
+	userLightTarget.position.copy( raycaster.ray.direction.add( raycaster.ray.origin ) );
 
 }
 
