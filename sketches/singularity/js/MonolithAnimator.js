@@ -6,24 +6,6 @@ class MonolithAnimator {
 
 	}
 
-	static get NONE() {
-
-		return 0;
-
-	}
-
-	static get SOME() {
-
-		return 1;
-
-	}
-
-	static get ALL() {
-
-		return 2;
-
-	}
-
 	assign( mode ) {
 
 		switch ( mode ) {

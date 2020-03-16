@@ -79,7 +79,7 @@ class MonolithGenerator {
 
 	}
 
-	removeMonolithsWithinThisSphere( sphere ) {
+	hideMonolithsWithinThisSphere( sphere ) {
 
 		this.monoliths.forEach( function ( monolith ) {
 
@@ -93,18 +93,42 @@ class MonolithGenerator {
 
 	}
 
-	createHelpers( object = this.defaults.object ) {
+	createHelpers( mode, color, object = this.defaults.object ) {
+
+		if ( mode === 0 ) return false;
 
 		this.helpers = new Array();
 
 		this.monoliths.forEach( ( monolith ) => {
 
-			let helper = new THREE.BoxHelper( monolith.mesh );
+			if ( mode === 5 && ! monolith.mesh.visible ) return;
+			if ( mode === 6 && monolith.mesh.visible ) return;
+
+			let helper = new THREE.BoxHelper( monolith.mesh, color );
 
 			object.add( helper );
 			this.helpers.push( helper );
 
 		} );
+
+		if ( mode === 1 ) {
+
+			let quantity = Math.round( Math.random() * this.helpers.length );
+
+			for ( let i = 0; i < quantity; i ++ ) {
+
+				this.helpers.splice( Math.floor(
+					Math.random() * this.helpers.length
+				), 1 ).forEach( ( removedHelper ) => {
+
+					console.log( removedHelper );
+					object.remove( removedHelper );
+
+				} );
+
+			}
+
+		}
 
 	}
 

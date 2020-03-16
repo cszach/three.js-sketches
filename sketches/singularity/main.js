@@ -1,7 +1,20 @@
+/**
+ * singularity
+ *
+ * A three.js sketch.
+ *
+ * @author Nguyen Hoang Duong / you_create@protonmail.com
+ */
+
+// three.js
+
 import { WEBGL } from '../../three.js/examples/jsm/WebGL.js';
 import * as THREE from '../../three.js/build/three.module.js';
 import { OrbitControls } from '../../three.js/examples/jsm/controls/OrbitControls.js';
 
+// App
+
+import { NONE, SOME, ALL, VISIBLES, INVISIBLES } from './js/constants.js';
 import { Singularity } from './js/Singularity.js';
 import { Monolith } from './js/Monolith.js';
 import { MonolithGenerator } from './js/MonolithGenerator.js';
@@ -9,7 +22,8 @@ import { MonolithAnimator } from './js/MonolithAnimator.js';
 import { CanvasHelper } from '../../lib/misc/CanvasHelper.js';
 
 let scene, camera, renderer, controls;
-let animator;
+let generator, animator; // Monoliths generator and animator
+let sphere; // Background sphere
 
 let canvas = document.getElementById( 'app' );
 let context = canvas.getContext( 'webgl2', { alpha: false } );
@@ -43,10 +57,19 @@ function init() {
 	} );
 	controls = new OrbitControls( camera, renderer.domElement );
 
-	camera.position.z = - 2;
+	// Controls settings
+
+	controls.enableZoom = false;
+	controls.enableRotate = false;
+	controls.enableKeys = false;
+
+	// Renderer's must-set
 
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( ...canvasHelper.dimension );
+
+	// Physically correct lighting settings
+
 	renderer.physicallyCorrectLights = true;
 	renderer.shadowMap.enabled = true;
 	renderer.toneMapping = THREE.ReinhardToneMapping;
@@ -56,6 +79,8 @@ function init() {
 
 	// MESHES
 
+	// Monoliths & Singularity
+
 	let monoliths = new THREE.Group();
 	scene.add( monoliths );
 
@@ -63,7 +88,8 @@ function init() {
 	let monolith = new Monolith( 0, 0, 0, 5, 5, 5, 0x000000, true );
 	let outerSphere = new THREE.Sphere( singularity.position, 12 );
 	let innerSphere = new THREE.Sphere( singularity.position, 8 );
-	let generator = new MonolithGenerator( monolith, {
+
+	generator = new MonolithGenerator( monolith, {
 		quantity: 15,
 		boundingSphere: outerSphere,
 		maxNumberOfIterations: 50,
@@ -73,18 +99,30 @@ function init() {
 
 	generator.generate();
 	generator.addMonolithsToScene();
-	generator.removeMonolithsWithinThisSphere( innerSphere );
-	generator.createHelpers();
+	generator.hideMonolithsWithinThisSphere( innerSphere );
+	generator.createHelpers( INVISIBLES, 0xffca28 );
 
 	scene.add( singularity.mesh.clone() );
-	camera.lookAt( singularity.mesh );
 
-	// console.log( "Initiation finished with " + monoliths.children.length + " monoliths." );
+	// Background sphere
+
+	let sphereGeo, sphereMat;
+
+	sphereGeo = new THREE.SphereBufferGeometry( 20, 20, 20 );
+	sphereMat = new THREE.MeshBasicMaterial( {
+		color: 0xffffff,
+		transparent: true,
+		opacity: 0.5,
+		wireframe: true,
+	} );
+
+	sphere = new THREE.Mesh( sphereGeo, sphereMat );
+	scene.add( sphere );
 
 	// Animation setup
 
 	animator = new MonolithAnimator( generator.monoliths );
-	animator.assign( MonolithAnimator.SOME );
+	animator.assign( SOME );
 
 	// Debugging purposes
 
@@ -98,22 +136,49 @@ function render( time ) {
 
 	requestAnimationFrame( render );
 
+	// Animate the camera
+
 	animateCamera(
-		time * 0.0003,
+		time * 0.0001,
 		Math.sin( time * 0.0001 ) * Math.sin( time * 0.0001 ) * 3 + 1.5,
 		2,
 		2
 	);
 
+	// Animate the background sphere
+
+	sphere.rotation.x = Math.sin( time * 0.0003 );
+	sphere.rotation.y = Math.sin( time * 0.0007 );
+	sphere.rotation.z = Math.sin( time * 0.0005 );
+
+	// Animate the monoliths
+
 	animator.animate( time, 0.0005 );
 
+	// Update things
+
+	generator.helpers.forEach( ( helper ) => {
+
+		helper.update();
+
+	} );
 	canvasHelper.update();
 	controls.update();
+
+	// Render things
 
 	renderer.render( scene, camera );
 
 }
 
+/**
+ * Animate the camera
+ *
+ * @param {number} time Time elapsed since the sketch started
+ * @param {number} multiplier Multiplies with the trigonemtric results when computing the x and z indices
+ * @param {number} heightMultiplier Multiplies with the trigonemtric result when computing the y index
+ * @param {number} advance Multiplies with time
+ */
 function animateCamera( time, multiplier, heightMultiplier, advance ) {
 
 	camera.position.set(
