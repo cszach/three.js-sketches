@@ -14,15 +14,17 @@ import { OrbitControls } from '../../../three.js/examples/jsm/controls/OrbitCont
 
 // App
 
-import { SINGULARITY_NAME, MONOLITHS_NAME, NONE, SOME, ALL, VISIBLES, INVISIBLES } from './constants.js';
+import { SINGULARITY_NAME, MONOLITHS_NAME, SOME, INVISIBLES, AMBER } from './constants.js';
 import { Singularity } from './entities/Singularity.js';
 import { Monolith } from './entities/Monolith.js';
 import { MonolithGenerator } from './facilities/MonolithGenerator.js';
 import { MonolithAnimator } from './facilities/MonolithAnimator.js';
+import { Particles } from './entities/Particles.js';
 import { CanvasHelper } from '../../../lib/misc/CanvasHelper.js';
 
 let scene, camera, renderer, controls, raycaster, mouse;
 let monoliths, generator, animator; // Monoliths generator and animator
+let particles; // System of particles
 let sphere; // Background sphere
 let userLight, userLightTarget; // Interactive light
 
@@ -63,6 +65,8 @@ function init() {
 		antialias: true
 	} );
 	controls = new OrbitControls( camera, renderer.domElement );
+
+	camera.position.z = 5;
 
 	// Controls settings
 
@@ -139,7 +143,7 @@ function init() {
 	generator.generate();
 	generator.addMonolithsToScene();
 	generator.hideMonolithsWithinThisSphere( innerSphere );
-	generator.createHelpers( INVISIBLES, 0xffca28 );
+	generator.createHelpers( INVISIBLES, AMBER.getHex() );
 
 	scene.add( singularity.mesh );
 
@@ -157,6 +161,15 @@ function init() {
 
 	sphere = new THREE.Mesh( sphereGeo, sphereMat );
 	scene.add( sphere );
+
+	// Particles
+
+	sphereGeo.computeBoundingSphere();
+
+	particles = new Particles( 20000, 0.05, AMBER.getHex() );
+	particles.build( - sphereGeo.parameters.radius, sphereGeo.parameters.radius );
+
+	scene.add( particles.points );
 
 	// User's interactive light
 
@@ -207,6 +220,11 @@ function render( time ) {
 		2,
 		2
 	);
+
+	// Animate the particles
+
+	particles.points.geometry.verticesNeedUpdate = true;
+	particles.animate( time, 0.0001 );
 
 	// Animate the background sphere
 
