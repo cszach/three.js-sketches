@@ -200,6 +200,16 @@ function init() {
 	animator = new MonolithAnimator( generator.monoliths );
 	animator.assign( SOME );
 
+	// Sound
+
+	let listener = new THREE.AudioListener();
+	let audio = new THREE.Audio( listener );
+	let media = new Audio( "audio/ambient.mp3" );
+
+	media.loop = true;
+	media.play();
+	audio.setMediaElementSource( media );
+
 	// Debugging purposes
 
 	window.scene = scene;
