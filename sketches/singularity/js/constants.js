@@ -1,5 +1,3 @@
-import { Color } from '../../../../three.js/build/three.module.js';
-
 // Names
 
 export const SINGULARITY_NAME = "Singularity";
@@ -22,5 +20,6 @@ export const TWO_PI = Math.PI * 2;
 
 // Colors
 
-export const BLACK = new Color( 0x000000 );
-export const AMBER = new Color( 0xffca28 );
+export const BLACK = 0x000000;
+export const WHITE = 0xffffff;
+export const AMBER = 0xffca28;

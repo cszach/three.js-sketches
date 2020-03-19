@@ -12,9 +12,13 @@ import { WEBGL } from '../../../three.js/examples/jsm/WebGL.js';
 import * as THREE from '../../../three.js/build/three.module.js';
 import { OrbitControls } from '../../../three.js/examples/jsm/controls/OrbitControls.js';
 
+// Other lib
+
+import TWEEN from '../../../lib/tween.js/tween.esm.js';
+
 // App
 
-import { SINGULARITY_NAME, MONOLITHS_NAME, SOME, INVISIBLES, AMBER } from './constants.js';
+import { SINGULARITY_NAME, MONOLITHS_NAME, SOME, INVISIBLES, BLACK, WHITE, AMBER } from './constants.js';
 import { Singularity } from './entities/Singularity.js';
 import { Monolith } from './entities/Monolith.js';
 import { MonolithGenerator } from './facilities/MonolithGenerator.js';
@@ -23,7 +27,7 @@ import { Particles } from './entities/Particles.js';
 import { CanvasHelper } from '../../../lib/misc/CanvasHelper.js';
 
 let scene, camera, renderer, controls, raycaster, mouse;
-let monoliths, generator, animator; // Monoliths generator and animator
+let generator, animator; // Monoliths generator and animator
 let particles; // System of particles
 let sphere; // Background sphere
 let userLight, userLightTarget; // Interactive light
@@ -40,6 +44,7 @@ if ( WEBGL.isWebGL2Available() ) {
 
 	init();
 	render();
+	intro( 3000, 800 );
 
 } else {
 
@@ -92,7 +97,7 @@ function init() {
 
 	// Monoliths
 
-	monoliths = new THREE.Group();
+	let monoliths = new THREE.Group();
 	let monolithMaterial = new THREE.MeshStandardMaterial( {
 		metalness: 0.8,
 		roughness: 0.5,
@@ -105,7 +110,7 @@ function init() {
 
 	// Singularity's light
 
-	let light = new THREE.PointLight( 0xffffff, 1, Infinity, 2 );
+	let light = new THREE.PointLight( WHITE, 1, Infinity, 2 );
 	light.power = 120000;
 
 	light.castShadow = true;
@@ -114,9 +119,9 @@ function init() {
 	// Singularity
 
 	let singularityMaterial = new THREE.MeshStandardMaterial( {
-		emissive: 0xffffff,
+		emissive: WHITE,
 		emissiveIntensity: light.intensity / Math.pow( 0.02, 2.0 ),
-		color: 0x000000
+		color: BLACK
 	} );
 
 	let singularity = new Singularity(
@@ -125,12 +130,16 @@ function init() {
 		50,
 		50,
 		singularityMaterial,
-		light
+		light,
+		true
 	);
-	singularity.mesh.name = SINGULARITY_NAME;
+	singularity.group.name = SINGULARITY_NAME;
 
-	let outerSphere = new THREE.Sphere( singularity.position, 12 );
-	let innerSphere = new THREE.Sphere( singularity.position, 8 );
+
+	scene.add( singularity.group );
+
+	let outerSphere = new THREE.Sphere( singularity.mesh.position, 12 );
+	let innerSphere = new THREE.Sphere( singularity.mesh.position, 8 );
 
 	generator = new MonolithGenerator( monolith, {
 		quantity: 15,
@@ -143,9 +152,7 @@ function init() {
 	generator.generate();
 	generator.addMonolithsToScene();
 	generator.hideMonolithsWithinThisSphere( innerSphere );
-	generator.createHelpers( INVISIBLES, AMBER.getHex() );
-
-	scene.add( singularity.mesh );
+	generator.createHelpers( INVISIBLES, AMBER );
 
 	// Background sphere
 
@@ -166,7 +173,7 @@ function init() {
 
 	sphereGeo.computeBoundingSphere();
 
-	particles = new Particles( 20000, 0.05, AMBER.getHex() );
+	particles = new Particles( 20000, 0.05, AMBER );
 	particles.build( - sphereGeo.parameters.radius, sphereGeo.parameters.radius );
 
 	scene.add( particles.points );
@@ -215,12 +222,14 @@ function init() {
 	window.scene = scene;
 	window.generator = generator;
 	window.animator = animator;
+	window.light = light;
 
 }
 
 function render( time ) {
 
 	requestAnimationFrame( render );
+	TWEEN.update( time );
 
 	// Animate the camera
 
@@ -263,6 +272,30 @@ function render( time ) {
 	// Render things
 
 	renderer.render( scene, camera );
+
+}
+
+function intro( length, wait ) {
+
+	let sglrt = scene.getObjectByName( SINGULARITY_NAME );
+	let sglrtLight = sglrt.getObjectByName( "Light" );
+	let sglrtMaterial = sglrt.getObjectByName( "Mesh" ).material;
+
+	sglrtLight.power = 0;
+	sglrtMaterial.transparent = true;
+	sglrtMaterial.opacity = 0;
+
+	new TWEEN.Tween( sglrtLight )
+		.delay( wait )
+		.to( { power: 120000 }, length )
+		.easing( TWEEN.Easing.Linear.None )
+		.start();
+
+	new TWEEN.Tween( sglrtMaterial )
+		.delay( wait )
+		.to( { opacity: 1 }, length )
+		.easing( TWEEN.Easing.Linear.None )
+		.start();
 
 }
 

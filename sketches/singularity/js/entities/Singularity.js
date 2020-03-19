@@ -3,20 +3,21 @@ import { BLACK } from './../constants.js';
 
 class Singularity {
 
-	constructor( size, color, detailX, detailY, material, light ) {
+	constructor( size, color, detailX, detailY, material, light, physics = false ) {
 
 		this.size = size;
 		this.color = color;
 		this.details = { x: detailX, y: detailY };
 		this.material = material;
 		this.light = light;
+		this.physicallyCorrect = physics;
 		this.emissive = material.emissive.clone();
 
 		this.build();
 
 	}
 
-	build( material = this.material, light = this.light ) {
+	build( material = this.material, light = this.light, physics = this.physicallyCorrect ) {
 
 		// Build the mesh
 
@@ -29,22 +30,30 @@ class Singularity {
 		);
 
 		mesh = new THREE.Mesh( geometry, material );
-
-		light.name = "Light";
-		mesh.add( light );
 		mesh.geometry.computeBoundingBox();
 
+		this.light = light;
 		this.mesh = mesh;
+
+		this.light.name = "Light";
+		this.mesh.name = "Mesh";
+
+		this.group = new THREE.Group();
+		this.group.add( this.mesh, this.light );
+
+		if ( physics ) {
+
+			this.mesh.castShadow = this.mesh.receiveShadow = true;
+			this.group.castShadow = this.group.receiveShadow = true;
+
+		}
 
 	}
 
 	toggleLight() {
 
-		let light = this.mesh.getObjectByName( "Light" );
-		let material = this.mesh.material;
-
-		light.visible = ! light.visible;
-		material.emissive = ( light.visible ) ? this.emissive.clone() : BLACK;
+		this.light.visible = ! this.light.visible;
+		this.material.emissive = ( this.light.visible ) ? this.emissive.clone() : new THREE.Color( BLACK );
 
 	}
 
