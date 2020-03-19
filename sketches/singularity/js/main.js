@@ -162,7 +162,7 @@ function init() {
 	sphereMat = new THREE.MeshBasicMaterial( {
 		color: 0xffffff,
 		transparent: true,
-		opacity: 0.5,
+		opacity: 0.8,
 		wireframe: true,
 	} );
 
