@@ -10,6 +10,10 @@ the thumbnail to see the sketch's source code. Enjoy! :lollipop:
 <table>
     <tr>
         <td align="center">
+            <a href="https://you-create.github.io/three.js-sketches/sketches/singularity"><img src="sketches/singularity/thumbnail.png"/></a><br/>
+            <a href="sketches/singularity/">singularity</a>
+        </td>
+        <td align="center">
             <a href="https://you-create.github.io/three.js-sketches/sketches/wall-of-donuts"><img src="sketches/wall-of-donuts/thumbnail.png"/></a><br/>
             <a href="sketches/wall-of-donuts/">wall-of-donuts</a>
         </td>
