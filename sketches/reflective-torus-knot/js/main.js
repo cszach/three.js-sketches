@@ -50,7 +50,7 @@ function init() {
 
 	// Set up the cube map
 
-	path = "/assets/cube-maps/Yokohama/";
+	path = "../../../assets/cube-maps/Yokohama/";
 	format = ".jpg";
 	urls = [
 		path + "posx" + format,
