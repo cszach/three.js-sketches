@@ -6,8 +6,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		{% seo %}
 		<title>{{ page.title | default: site.title }}</title>
-		<link rel="stylesheet" href="{{ '/assets/css/main.css' | absolute_url }}" />
-		<link rel="stylesheet" href="{{ '/assets/css/home.css' | absolute_url }}" />
+		<link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}" />
+		<link rel="stylesheet" href="{{ '/assets/css/home.css' | relative_url }}" />
 	</head>
 	<body>
 		<div id="heading">
@@ -16,8 +16,8 @@
 		<div id="showcase">
 			{% for sketch in site.data.sketches reversed %}
 
-			<a href="/{{ sketch.date | date: '%Y/%m/%d' }}/{{ sketch.directory }}">
-				<img src="{{ '/sketches' | absolute_url }}/{{ sketch.directory }}/thumbnail.png" />
+			<a href="{{ sketch.date | date: '/%Y/%m/%d' | relative_url }}/{{ sketch.directory }}">
+				<img src="{{ '/sketches' | relative_url }}/{{ sketch.directory }}/thumbnail.png" />
 			</a>
 
 			{% endfor %}
