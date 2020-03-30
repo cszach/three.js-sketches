@@ -22,6 +22,6 @@ disabled.
 Textures of wools (can be found [here][1], [here][2], and [here][3]) are from
 Textures.com, these may not be redistributed by default.
 
-[1]: {{ "/assets/textures/wool-01" | relative_url }}
-[2]: {{ "/assets/textures/wool-02" | relative_url }}
-[3]: {{ "/assets/textures/wool-03" | relative_url }}
+[1]: {{ site.github.repository_url }}/tree/master/assets/textures/wool-01
+[2]: {{ site.github.repository_url }}/tree/master/assets/textures/wool-02
+[3]: {{ site.github.repository_url }}/tree/master/assets/textures/wool-03
