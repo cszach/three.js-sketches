@@ -35,7 +35,6 @@ function init() {
 	} );
 	controls = new OrbitControls( camera, renderer.domElement );
 
-	// scene.background = new THREE.Color( 0xdddddd );
 	camera.position.set( - 0.03, 0.1, 0.2 );
 	renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 	renderer.setPixelRatio( window.devicePixelRatio );
