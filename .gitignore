@@ -1,4 +1,14 @@
+# Project
+
 /sketches/Archived
+
+# Jekyll site
+
+/_site/
+/bundle/
+/.bundle/
+
+# Misc
 
 node_modules/
 package-lock.json
