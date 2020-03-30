@@ -1,0 +1,1 @@
+let scene, camera, renderer;

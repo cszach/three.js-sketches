@@ -1,0 +1,48 @@
+div#heading {
+	height: 33vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+div#embed {
+	--width: 70vw;
+	--aspect: calc( 16 / 9 );
+
+	width: var(--width);
+	height: calc( var(--width) / var(--aspect) );
+	margin: 0 calc( ( 100vw - var(--width) ) / 2 );
+}
+
+div#embed > canvas {
+	width: 100% !important;
+	height: 100% !important;
+}
+
+div#embed > canvas:focus {
+	outline: none;
+}
+
+div#buttons {
+	margin: 3em 0px;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+div#buttons > .button {
+	margin: 0 1em;
+}
+
+div#content {
+	margin: 3em 10vw;
+}
+
+@media all and ( max-width: 480px ) and ( orientation: portrait ) {
+
+	div#buttons > .button {
+		margin: 0 0.5em;
+	}
+
+}

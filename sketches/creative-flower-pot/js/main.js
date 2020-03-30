@@ -18,10 +18,14 @@
  * @author Nguyen Hoang Duong / https:github.com/you-create
  */
 
-var scene, camera, renderer, controls; // Scene, camera, renderer, and controls
-var groundGeometry, groundMaterial, ground; // Ground
-var pot, potGeometry, potMaterial, transparentMaterial, potMaterials; // Pot
-var boxFlower,
+import { WEBGL } from '../../../three.js/examples/jsm/WebGL.js';
+import * as THREE from '../../../three.js/build/three.module.js';
+import { OrbitControls } from '../../../three.js/examples/jsm/controls/OrbitControls.js';
+
+let scene, camera, renderer, controls; // Scene, camera, renderer, and controls
+let groundGeometry, groundMaterial, ground; // Ground
+let pot, potGeometry, potMaterial, transparentMaterial, potMaterials; // Pot
+let boxFlower,
 	cylinderFlower,
 	dodecahedronFlower,
 	icosahedronFlower,
@@ -31,19 +35,19 @@ var boxFlower,
 	torusKnotFlower,
 	defaultFlowerMaterial,
 	defaultStemMaterial; // Geometries & materials for the flower and the stem
-var flowerPot; // Pot + Flowers + Stems (Object3D)
-var flower01, flower02, flower03, flower04, flower05; // Flowers
-var POTCENTER, FLOWERPOTCENTER, flowerPotCenter; // Centers
-var ambient, key, fill, back; // Lights
-var keyHelper, fillHelper, backHelper;
-var time; // Animation
+let flowerPot; // Pot + Flowers + Stems (Object3D)
+let flower01, flower02, flower03, flower04, flower05; // Flowers
+let POTCENTER, FLOWERPOTCENTER, flowerPotCenter; // Centers
+let ambient, key, fill, back; // Lights
+let keyHelper, fillHelper, backHelper;
+let time; // Animation
 
-var aspect = window.innerWidth / window.innerHeight;
-var canvas = document.createElement( "canvas" );
-var context = canvas.getContext( "webgl2", { alpha: false } );
+let canvas = document.getElementById( 'app' );
+let aspect = canvas.clientWidth / canvas.clientHeight;
+let context = canvas.getContext( "webgl2", { alpha: false } );
 
-var floatMemory; // Helper for randomFloat (implemented below)
-var geometryMemory; // Helper for randomGeometry (implemented below)
+let floatMemory; // Helper for randomFloat (implemented below)
+let geometryMemory; // Helper for randomGeometry (implemented below)
 
 /**
  * Return a random float in a given range defined by the minumum and maximum
@@ -224,14 +228,14 @@ function FlowerWithStem(
 FlowerWithStem.prototype = Object.create( THREE.Object3D.prototype );
 FlowerWithStem.prototype.constructor = FlowerWithStem;
 
-if ( THREE.WEBGL.isWebGL2Available() ) {
+if ( WEBGL.isWebGL2Available() ) {
 
 	init();
 	render();
 
 } else {
 
-	document.body.appendChild( THREE.WEBGL.getWebGLErrorMessage() );
+	document.body.appendChild( WEBGL.getWebGLErrorMessage() );
 
 }
 
@@ -246,12 +250,12 @@ function init() {
 		context: context,
 		antialias: true
 	} );
-	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	controls = new OrbitControls( camera, renderer.domElement );
 
 	scene.background = new THREE.Color( 0xaaaaaa );
 	camera.position.y = 5;
 	camera.position.z = 10;
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.shadowMap.enabled = true;
 	renderer.shadowMap.needsUpdate = true;
@@ -264,8 +268,6 @@ function init() {
 	controls.autoRotate = true;
 	controls.autoRotateSpeed = 3;
 	controls.target = new THREE.Vector3( 0, 0, 0 );
-
-	document.body.appendChild( renderer.domElement );
 
 	// Create a circle ground
 
@@ -389,18 +391,18 @@ function init() {
 
 	// scene.add( keyHelper, fillHelper, backHelper );
 
-	// Event listeners
-
-	window.addEventListener( "resize", onWindowResize );
-
-}
-
-function onWindowResize() {
-
-	aspect = window.innerWidth / window.innerHeight;
-	camera.aspect = aspect;
-	camera.updateProjectionMatrix();
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	window.flowerPot = flowerPot;
+	window.flower01 = flower01;
+	window.flower02 = flower02;
+	window.flower03 = flower03;
+	window.flower04 = flower04;
+	window.flower05 = flower05;
+	window.FlowerWithStem = FlowerWithStem;
+	window.dodecahedronFlower = dodecahedronFlower;
+	window.sphereFlower = sphereFlower;
+	window.torusFlower = torusFlower;
+	window.torusKnotFlower = torusKnotFlower;
+	window.octahedronFlower = octahedronFlower;
 
 }
 
@@ -409,6 +411,17 @@ function animate() {}
 function render( event ) {
 
 	requestAnimationFrame( render );
+
+	// On canvas resize
+
+	if ( canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight ) {
+
+		aspect = canvas.clientWidth / canvas.clientHeight;
+		camera.aspect = aspect;
+		camera.updateProjectionMatrix();
+		renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+
+	}
 
 	time = event * 0.001;
 

@@ -4,10 +4,37 @@
  * A room with donuts sticked on one wall and has some misc objects in it
  * (because why not?). This sketch also contains interaction.
  *
- * The position of the room, the door (& the doorview), the mirror, and the
- * light switch are dynamic i.e. they are calculated based on DIMENSION (see
- * 'Constants' below) and changing DIMENSION will also change their respective
- * position. Other objects' positions are not and have to be set manually.
+ * The single most important variable used in this sketch that affects the
+ * position and dimension of various meshes is 'ROOMDIMENSION' (see section
+ * 'Constants' below). The chart below shows in details how other meshes are
+ * affected by this variable. ('o' means affected, 'x' means unaffected)
+ *
+ * /------------------------------------------------------------\
+ * |        Mesh        |    Variable    | Dimension | Position |
+ * |------------------------------------------------------------|
+ * |        Room        |      room      |     o     |     x    |
+ * |       Mirror       |     mirror     |     o     |     o    |
+ * |  Door & Door knobs |  doorWithKnobs |     o     |     o    |
+ * |    Light switch    |   buttonLight  |     o     |     o    |
+ * |     Point light    |      point     |     x     |     o    |
+ * |        Cube        |      cube      |     x     |     o    |
+ * |        Torus       |      torus     |     x     |     x    |
+ * |        Stand       |      stand     |     x     |     x    |
+ * |   Model of Earth   |      earth     |     x     |     x    |
+ * |       Donuts       |     donut*     |     o     |     x    |
+ * \------------------------------------------------------------/
+ *
+ * Attributes of any mesh that are unaffected by ROOMDIMENSION have to be
+ * assigned values for manually. Also, cameras' positions are affected.
+ *
+ * Another feature of this sketch is that it implements physically-corrected
+ * lighting. For this, the measurements for distance and light power use certain
+ * units: meters for distance, lumens for light power. There are 3 light sources
+ * in this sketch:
+ *   o The light bulb on the ceilling
+ *   o The light switch next to the door
+ *   o The (virtual) light from the environment outside the door when the door
+ *     is opened
  *
  * TODO:
  *   o Implement physically correct lights & shadows
@@ -27,17 +54,17 @@
 var scene, camera, first, third, renderer, fly, orbit;
 var room; // Room
 var mirror, mirrorSurface, mirrorMesh; // Mirror
-var door, doorKnob01, doorKnob02, doorWithKnobs, doorView; // Room's door
+var door, doorKnob01, doorKnob02, doorWithKnobs, doorView, externalLight; // Room's door
 var button, buttonLight; // Light switch
 var cube, torus, stand, earth, planet, clouds; // Miscellaenous objects
-var ambient, point, bulb; // Lights
+var point, bulb; // Lights
 var donut01, donut02, donut03, donut04, donut05, donut06, donut07; // Donuts
 var buttonMaterial, bulbMaterial; // Materials that are not static
 var raycaster, mouse, intersects; // Raycasting
 var textureLoader, modelLoader; // Loaders
 var firstView; // Helpers
 var time, clock; // Animation
-var debugging = false; // Is debugging?
+var debugging = true; // Is debugging?
 
 // Variables used by the camera and the renderer
 
@@ -46,77 +73,23 @@ var canvas = document.createElement( "canvas" );
 var context = canvas.getContext( "webgl2", { alpha: false } );
 
 // Constants
+// Notes:
+//   o Distance is measured in meters
+//   o Light power is measured in lumens
 
 var RED = new THREE.Color( 0xff0000 );
 var GREEN = new THREE.Color( 0x00ff00 );
 var BLUE = new THREE.Color( 0x0000ff );
 var OFFSET = 0.001; // The amount of translation used to avoid z-fighting
-var DIMENSION = new THREE.Vector3( 30, 20, 20 ); // The dimension of the room
-var DOORWIDTH = 9; // The width of the room's door
-var DOORHEIGHT = 15; // The height of the room's door
-var NORMALROOMAMBIENT = new THREE.Color( 0x222222 ); // Color of the ambient light when the room's door is closed
-var OUTSIDELIGHTEDAMBIENT = new THREE.Color( 0x555555 ); // Color of the ambient light when the room's door is opened
-var POINTLIGHTINTENSITY = 1.75; // The intensity of the room's point light when it is on
-
-/**
- * A class that represents a room made up of four walls, a floor and a ceilling
- *
- * @param {Vector3} dimension The dimension of the room, determined by a
- * THREE.Vector3, where the y value determines the height of the room
- * @param {Material} wallMaterial The material for the walls
- * @param {Material} floorMaterial The material for the floor
- * @param {Material} ceilingMaterial The material for the ceiling
- */
-function Room( dimension, wallMaterial, floorMaterial, ceilingMaterial ) {
-
-	THREE.Group.apply( this, arguments );
-
-	let front, back, left, right; // Walls
-	let floor, ceiling;
-
-	front = new THREE.Mesh(
-		new THREE.PlaneBufferGeometry( dimension.x, dimension.y ),
-		wallMaterial
-	);
-	back = front.clone();
-	left = new THREE.Mesh(
-		new THREE.PlaneBufferGeometry( dimension.z, dimension.y ),
-		wallMaterial
-	);
-	right = left.clone();
-
-	front.position.set( 0, 0, - dimension.z / 2 );
-	back.position.set( 0, 0, dimension.z / 2 );
-	left.position.set( - dimension.x / 2, 0, 0 );
-	right.position.set( dimension.x / 2, 0, 0 );
-
-	back.rotation.x = Math.PI;
-	left.rotation.y = Math.PI / 2;
-	right.rotation.y = - Math.PI / 2;
-
-	floor = new THREE.Mesh(
-		new THREE.PlaneBufferGeometry( dimension.x, dimension.z ),
-		floorMaterial
-	);
-	ceiling = new THREE.Mesh(
-		new THREE.PlaneBufferGeometry( dimension.x, dimension.z ),
-		ceilingMaterial
-	);
-
-	floor.position.y = - dimension.y / 2;
-	ceiling.position.y = dimension.y / 2;
-
-	floor.rotation.x = - Math.PI / 2;
-	ceiling.rotation.x = Math.PI / 2;
-
-	front.receiveShadow = back.receiveShadow = left.receiveShadow = right.receiveShadow = floor.receiveShadow = ceiling.receiveShadow = true;
-
-	this.add( front, back, left, right, floor, ceiling );
-
-}
-
-Room.prototype = Object.create( THREE.Group.prototype );
-Room.prototype.constructor = Room;
+var ROOMDIMENSION = new THREE.Vector3( 5, 3, 3 ); // The dimension of the room
+var DOORDIMENSION = new THREE.Vector3(
+	ROOMDIMENSION.x * 0.3,
+	ROOMDIMENSION.y * 0.75,
+	ROOMDIMENSION.z / 80
+); // The dimension of the room's door
+var PERSONHEIGHT = 1.7; // The height of the first person view if the ground is at 0
+var pointLightPower = 850; // The power of the room's point light when it is on
+var externalLightIntensity = 100;
 
 if ( THREE.WEBGL.isWebGL2Available() ) {
 
@@ -131,12 +104,12 @@ if ( THREE.WEBGL.isWebGL2Available() ) {
 
 function init() {
 
-	// Set up the scene, the camera, the renderer, and the controls
+	// SCENE, CAMERA, RENDERER, CLOCK, CONTROLS
 
 	scene = new THREE.Scene();
-	first = new THREE.PerspectiveCamera( 75, aspect, 0.1, 100 );
+	first = new THREE.PerspectiveCamera( 75, aspect, 0.001, 1000 );
 	firstView = new THREE.CameraHelper( first );
-	third = new THREE.PerspectiveCamera( 75, aspect, 0.1, 1000 );
+	third = new THREE.PerspectiveCamera( 75, aspect, 0.001 );
 	renderer = new THREE.WebGLRenderer( {
 		canvas: canvas,
 		context: context,
@@ -146,13 +119,23 @@ function init() {
 	fly = new THREE.FlyControls( first, renderer.domElement );
 	orbit = new THREE.OrbitControls( third, renderer.domElement );
 
-	first.position.set( 0, 2, 3 );
+	firstView.name = "CameraHelper";
+	first.position.set(
+		0,
+		PERSONHEIGHT - ROOMDIMENSION.y / 2,
+		ROOMDIMENSION.z * 0.3
+	);
+	firstView.update();
 	firstView.visible = debugging;
-	third.position.set( 0, 20, 15 );
+	third.position.set( 0, ROOMDIMENSION.y * 1.5, ROOMDIMENSION.z * 1.5 );
 	camera = debugging ? third : first;
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.shadowMap.enabled = true;
+	renderer.physicallyCorrectLights = true;
+	renderer.outputEncoding = THREE.sRGBEncoding;
+	renderer.toneMapping = THREE.ReinhardToneMapping;
+	renderer.toneMappingExposure = Math.pow( 0.68, 5.0 );
 	fly.movementSpeed = 100;
 	fly.rollSpeed = Math.PI / 48;
 	fly.setMouseMoveOnly();
@@ -161,12 +144,13 @@ function init() {
 	document.body.appendChild( renderer.domElement );
 	scene.add( firstView );
 
-	// Create the room
+	// ROOM
 
 	textureLoader = new THREE.TextureLoader();
 
-	let wallMaterial = new THREE.MeshPhongMaterial( {
-		shininess: 20,
+	let wallMaterial = new THREE.MeshStandardMaterial( {
+		roughness: 0.8,
+		metalness: 0.2,
 		color: 0x9d1b3a
 	} );
 	let floorMaterial = new THREE.MeshStandardMaterial( {
@@ -176,14 +160,18 @@ function init() {
 	} );
 	let ceilingMaterial = wallMaterial.clone();
 
-	room = new Room( DIMENSION, wallMaterial, floorMaterial, ceilingMaterial );
+	room = new Room( ROOMDIMENSION, wallMaterial, floorMaterial, ceilingMaterial );
 	room.name = "Room";
 
 	scene.add( room );
 
-	// Add a door
+	// DOOR
 
-	let doorGeometry = new THREE.BoxGeometry( DOORWIDTH, DOORHEIGHT, 0.25 );
+	let doorGeometry = new THREE.BoxBufferGeometry(
+		DOORDIMENSION.x,
+		DOORDIMENSION.y,
+		DOORDIMENSION.z
+	);
 	let doorMaterial = new THREE.MeshStandardMaterial( {
 		color: 0xfb8c00,
 		roughness: 0.8,
@@ -192,7 +180,7 @@ function init() {
 
 	door = new THREE.Mesh( doorGeometry, doorMaterial );
 
-	let doorKnobGeometry = new THREE.SphereGeometry( 0.45, 45, 45 );
+	let doorKnobGeometry = new THREE.SphereBufferGeometry( DOORDIMENSION.x / 20, 45, 45 );
 	let doorKnobMaterial = new THREE.MeshStandardMaterial( {
 		color: 0xffeb3b,
 		roughness: 0.8,
@@ -202,50 +190,66 @@ function init() {
 	doorKnob01 = new THREE.Mesh( doorKnobGeometry, doorKnobMaterial );
 	doorKnob02 = doorKnob01.clone();
 
-	doorKnob01.position.x = doorKnob02.position.x = 3;
-	doorKnob01.position.z = 0.4;
-	doorKnob02.position.z = - 0.4;
+	doorKnob01.position.x = doorKnob02.position.x = DOORDIMENSION.x / 3;
+	doorKnob01.position.z = DOORDIMENSION.z * 1.5;
+	doorKnob02.position.z = - DOORDIMENSION.z * 1.5;
 	doorKnob01.name = doorKnob02.name = "Door knob";
-
-	door.castShadow = doorKnob01.castShadow = doorKnob02.castShadow = true;
-	door.receiveShadow = doorKnob01.receiveShadow = doorKnob02.receiveShadow = true;
 
 	doorWithKnobs = new THREE.Object3D();
 	doorWithKnobs.name = "Door";
 	doorWithKnobs.add( door, doorKnob01, doorKnob02 );
 
-	doorWithKnobs.position.z = DIMENSION.z / 2;
-	doorWithKnobs.position.y = DOORHEIGHT / 2 - DIMENSION.y / 2;
+	doorWithKnobs.position.z = ROOMDIMENSION.z / 2;
+	doorWithKnobs.position.y = DOORDIMENSION.y / 2 - ROOMDIMENSION.y / 2;
 	doorWithKnobs.userData = { isClosed: true };
 
 	room.add( doorWithKnobs );
 
-	// Add a door view
+	// DOORVIEW
 
 	textureLoader.setPath( "textures/" );
 
 	let doorViewImage = textureLoader.load( "doorview.png" );
-	let doorViewGeometry = new THREE.PlaneBufferGeometry( DOORWIDTH, DOORHEIGHT );
-	let doorViewMaterial = new THREE.MeshBasicMaterial( {
-		map: doorViewImage
+	doorViewImage.encoding = THREE.sRGBEncoding;
+	let doorViewGeometry = new THREE.PlaneBufferGeometry(
+		DOORDIMENSION.x,
+		DOORDIMENSION.y
+	);
+	let doorViewMaterial = new THREE.MeshMatcapMaterial( {
+		map: doorViewImage,
+		side: THREE.BackSide
 	} );
 
 	doorView = new THREE.Mesh( doorViewGeometry, doorViewMaterial );
 
-	doorView.rotation.y = Math.PI;
-	doorView.position.set(
+	THREE.RectAreaLightUniformsLib.init();
+
+	externalLight = new THREE.RectAreaLight(
+		0xffffff,
+		0,
+		DOORDIMENSION.x,
+		DOORDIMENSION.y
+	);
+	externalLight.add( doorView );
+
+	externalLight.lookAt( 0, 0, 0 );
+	externalLight.position.set(
 		doorWithKnobs.position.x,
 		doorWithKnobs.position.y,
 		doorWithKnobs.position.z - OFFSET
 	);
 
-	room.add( doorView );
+	room.add( externalLight );
 
-	// Create a light switch
+	// LIGHT SWITCH
 
-	let SWITCHDEPTH = 0.1;
+	let SWITCHDEPTH = DOORDIMENSION.z * 0.3;
 
-	let buttonGeometry = new THREE.BoxGeometry( 0.6, 0.9, SWITCHDEPTH );
+	let buttonGeometry = new THREE.BoxBufferGeometry(
+		DOORDIMENSION.x * 0.06,
+		DOORDIMENSION.y * 0.06,
+		SWITCHDEPTH
+	);
 	buttonMaterial = new THREE.MeshStandardMaterial( {
 		color: 0x000000,
 		emissive: 0x00ff00,
@@ -255,17 +259,23 @@ function init() {
 	button = new THREE.Mesh( buttonGeometry, buttonMaterial );
 	button.name = "Button";
 
-	buttonLight = new THREE.PointLight( 0x00ff00, 0.3, 3 );
+	buttonLight = new THREE.PointLight( 0x00ff00, 1, 0, 2 );
+	buttonLight.power = 2;
+	buttonLight.distance = Infinity;
 	buttonLight.add( button );
-	buttonLight.position.set( 6, - 0.5, DIMENSION.z / 2 - SWITCHDEPTH / 2 );
+	buttonLight.position.set(
+		DOORDIMENSION.x / 2 + DOORDIMENSION.x / 6,
+		ROOMDIMENSION.y / 2 - ( DOORDIMENSION.y * 2 ) / 3,
+		ROOMDIMENSION.z / 2 - SWITCHDEPTH / 2
+	);
 
 	room.add( buttonLight );
 
-	// Add a mirror
+	// MIRROR
 
-	let MIRRORWIDTH = 18;
-	let MIRRORHEIGHT = 18;
-	let MIRRORDEPTH = 0.125;
+	let MIRRORWIDTH = ROOMDIMENSION.z * 0.9;
+	let MIRRORHEIGHT = ROOMDIMENSION.y * 0.9;
+	let MIRRORDEPTH = ROOMDIMENSION.x / 240;
 
 	let mirrorSurfaceGeometry = new THREE.PlaneBufferGeometry(
 		MIRRORWIDTH,
@@ -279,7 +289,7 @@ function init() {
 	} );
 	mirrorSurface.position.z = MIRRORDEPTH / 2;
 
-	let mirrorGeometry = new THREE.BoxGeometry(
+	let mirrorGeometry = new THREE.BoxBufferGeometry(
 		MIRRORWIDTH,
 		MIRRORHEIGHT,
 		MIRRORDEPTH - OFFSET
@@ -294,17 +304,20 @@ function init() {
 	mirror.add( mirrorSurface, mirrorMesh );
 
 	mirror.rotation.y = Math.PI / 2;
-	mirror.position.x = - ( DIMENSION.x / 2 - ( MIRRORDEPTH - OFFSET ) / 2 );
-
-	mirrorSurface.castShadow = mirrorMesh.castShadow = true;
+	mirror.position.x = - ( ROOMDIMENSION.x / 2 - ( MIRRORDEPTH - OFFSET ) / 2 );
 
 	room.add( mirror );
 
-	// Add some miscellaenous objects
+	// MISC MESHES
 
 	// Add a cube with different colors on different faces
 
-	let cubeGeo = new THREE.BoxGeometry( 5, 5, 5 );
+	let CUBEDIMENSION = 0.75;
+	let cubeGeo = new THREE.BoxGeometry(
+		CUBEDIMENSION,
+		CUBEDIMENSION,
+		CUBEDIMENSION
+	);
 	let cubeFaceColors = [ RED, GREEN, BLUE ];
 
 	for ( let i = 0; i < cubeGeo.faces.length / 4; i ++ ) {
@@ -322,57 +335,89 @@ function init() {
 			vertexColors: THREE.FaceColors
 		} )
 	);
-	cube.position.set( - 12, - 7.5, 7 );
+	cube.position.set(
+		- (
+			ROOMDIMENSION.x / 2 -
+			ROOMDIMENSION.x * 0.02 -
+			CUBEDIMENSION / 2 -
+			MIRRORDEPTH
+		),
+		CUBEDIMENSION / 2 - ROOMDIMENSION.y / 2,
+		ROOMDIMENSION.z / 2 - ROOMDIMENSION.x * 0.02 - CUBEDIMENSION / 2
+	);
 
 	// Add a torus that sits on the cube
 
 	torus = new THREE.Mesh(
-		new THREE.TorusBufferGeometry( 3, 1.2, 100, 6 ),
+		new THREE.TorusBufferGeometry( 0.4, 0.16, 100, 6 ),
 		new THREE.MeshStandardMaterial( {
 			roughness: 0.5,
 			metalness: 0,
 			color: 0xff8a65
 		} )
 	);
-	torus.position.set( - 11.3, - 1.43, 7 );
+	torus.position.set( - 2.05, - 0.28, 1.05 );
 	torus.rotation.set(
-		THREE.Math.degToRad( 18.42 ),
-		THREE.Math.degToRad( - 35.62 ),
-		THREE.Math.degToRad( - 108.92 )
+		THREE.Math.degToRad( 20 ),
+		THREE.Math.degToRad( - 45 ),
+		THREE.Math.degToRad( 14.6 )
 	);
 
 	// Add a cylinder
 
+	let STANDRADIUS = 0.25;
+	let STANDHEIGHT = 1;
+	let STANDOFFSET = 0.5;
+
 	stand = new THREE.Mesh(
-		new THREE.CylinderBufferGeometry( 2, 2, 7, 50, 50 ),
+		new THREE.CylinderBufferGeometry(
+			STANDRADIUS,
+			STANDRADIUS,
+			STANDHEIGHT,
+			50,
+			1
+		),
 		new THREE.MeshStandardMaterial( {
 			color: 0xffffff,
 			roughness: 0.8,
 			metalness: 0.2
 		} )
 	);
-	stand.position.set( 12, - 6.5, 7.5 );
+	stand.position.set(
+		ROOMDIMENSION.x / 2 - STANDRADIUS - STANDRADIUS * STANDOFFSET,
+		STANDHEIGHT / 2 - ROOMDIMENSION.y / 2,
+		ROOMDIMENSION.z / 2 - STANDRADIUS - STANDRADIUS * STANDOFFSET
+	);
 
 	// Add a model of the Earth
 	// This includes the surface and the atmosphere
 
 	textureLoader.setPath( "../../assets/textures/earth/" );
 
+	let EARTHRADIUS = 0.26;
+	let map = textureLoader.load( "earth_atmos_2048.jpg" );
+	let specularMap = textureLoader.load( "earth_specular_2048.jpg" );
+	let normalMap = textureLoader.load( "earth_normal_2048.jpg" );
+	let cloudsMap = textureLoader.load( "earth_clouds_1024.png" );
+
+	map.encoding = specularMap.encoding = normalMap.encoding = cloudsMap.encoding =
+		THREE.sRGBEncoding;
+
 	planet = new THREE.Mesh(
-		new THREE.SphereBufferGeometry( 2, 50, 50 ),
+		new THREE.SphereBufferGeometry( EARTHRADIUS, 50, 50 ),
 		new THREE.MeshPhongMaterial( {
 			specular: 0x333333,
 			shininess: 15,
-			map: textureLoader.load( "earth_atmos_2048.jpg" ),
-			specularMap: textureLoader.load( "earth_specular_2048.jpg" ),
-			normalMap: textureLoader.load( "earth_normal_2048.jpg" ),
+			map,
+			specularMap,
+			normalMap,
 			normalScale: new THREE.Vector2( 0.85, 0.85 )
 		} )
 	);
 	clouds = new THREE.Mesh(
-		new THREE.SphereBufferGeometry( 2, 50, 50 ),
+		new THREE.SphereBufferGeometry( EARTHRADIUS, 50, 50 ),
 		new THREE.MeshLambertMaterial( {
-			map: textureLoader.load( "earth_clouds_1024.png" ),
+			map: cloudsMap,
 			transparent: true
 		} )
 	);
@@ -381,17 +426,76 @@ function init() {
 
 	earth = new THREE.Group();
 	earth.add( planet, clouds );
-	earth.position.set( 12, - 1.5, 7.5 );
+	earth.position.copy( stand.position );
 	earth.rotation.z = 0.41;
 
-	// Shadows for the misc objects
+	room.add( cube, torus, stand, earth );
+
+	// DONUTS
+
+	// loadDonuts(); // Function defined below
+
+	// LIGHTING
+
+	let bulbGeometry = new THREE.SphereBufferGeometry( 0.1, 50, 50 );
+	bulbMaterial = new THREE.MeshStandardMaterial( {
+		emissive: 0xffffff,
+		emissiveIntensity: 1,
+		color: 0x000000
+	} );
+
+	bulb = new THREE.Mesh( bulbGeometry, bulbMaterial );
+	bulb.name = "Light bulb";
+
+	point = new THREE.PointLight( 0xffffff, 1, 0, 2 );
+	point.power = pointLightPower;
+	point.distance = Infinity;
+	point.add( bulb );
+	point.position.y = ROOMDIMENSION.y * 0.4;
+	point.userData = { isOn: true };
+
+	room.add( point );
+
+	// SHADOWS
+
+	// Door & door knobs
+
+	door.castShadow = doorKnob01.castShadow = doorKnob02.castShadow = true;
+	door.receiveShadow = doorKnob01.receiveShadow = doorKnob02.receiveShadow = true;
+
+	// Mirror
+
+	mirrorSurface.castShadow = mirrorMesh.castShadow = true;
+
+	// Misc meshes
 
 	cube.castShadow = torus.castShadow = stand.castShadow = planet.castShadow = clouds.castShadow = true;
 	cube.receiveShadow = torus.receiveShadow = stand.receiveShadow = true;
 
-	room.add( cube, torus, stand, earth );
+	// Lights
 
-	// Add the donuts
+	point.castShadow = true;
+	point.shadow.mapSize.width = point.shadow.mapSize.height = 2048;
+
+	// RAYCASTING
+
+	raycaster = new THREE.Raycaster();
+	mouse = new THREE.Vector2();
+
+	// EVENT LISTENERS
+
+	window.addEventListener( "resize", onWindowResize, false );
+	window.addEventListener( "mousemove", onMouseMove, false );
+	window.addEventListener( "mousedown", onMouseClick, false );
+	document.body.addEventListener( "keypress", onKeyPress, false );
+
+	// LOGS
+
+	console.log( "Debugging mode: " + ( debugging ? "ON" : "OFF" ) );
+
+}
+
+function loadDonuts() {
 
 	modelLoader = new THREE.GLTFLoader();
 	modelLoader.setPath( "models/" );
@@ -466,43 +570,6 @@ function init() {
 
 	} );
 
-	// Lighting
-
-	ambient = new THREE.AmbientLight( NORMALROOMAMBIENT );
-
-	let bulbGeometry = new THREE.SphereBufferGeometry( 1, 50, 50 );
-	bulbMaterial = new THREE.MeshStandardMaterial( {
-		emissive: 0xffffff,
-		emissiveIntensity: 1,
-		color: 0x000000
-	} );
-
-	bulb = new THREE.Mesh( bulbGeometry, bulbMaterial );
-	bulb.name = "Light bulb";
-
-	point = new THREE.PointLight( 0xffffff, POINTLIGHTINTENSITY, 40, 1 );
-	point.add( bulb );
-	point.castShadow = true;
-	point.shadow.mapSize.width = point.shadow.mapSize.height = 2048;
-	point.position.y = 8;
-	point.userData = { isOn: true };
-
-	room.add( ambient, point );
-
-	// Raycasting setup
-
-	raycaster = new THREE.Raycaster();
-	mouse = new THREE.Vector2();
-
-	// Event listeners
-
-	window.addEventListener( "resize", onWindowResize, false );
-	window.addEventListener( "mousemove", onMouseMove, false );
-	window.addEventListener( "mousedown", onMouseClick, false );
-	document.body.addEventListener( "keypress", onKeyPress, false );
-
-	console.log( "Debugging mode: " + ( debugging ? "ON" : "OFF" ) );
-
 }
 
 function switchLight() {
@@ -512,7 +579,7 @@ function switchLight() {
 
 	// Change the light's intensity
 
-	point.intensity = isLightOn ? POINTLIGHTINTENSITY : 0;
+	point.power = isLightOn ? pointLightPower : 0;
 	bulbMaterial.emissiveIntensity = isLightOn ? 1 : 0.25;
 
 	// Change the color of the button and its light
@@ -521,11 +588,6 @@ function switchLight() {
 	buttonMaterial.setValues( {
 		emissive: buttonLight.color
 	} );
-
-	// If the room's door is opened, change the room's ambient
-
-	if ( ! doorWithKnobs.userData.isClosed )
-		ambient.color = isLightOn ? NORMALROOMAMBIENT : OUTSIDELIGHTEDAMBIENT;
 
 }
 
@@ -572,8 +634,15 @@ function onKeyPress( event ) {
 
 function animate() {
 
+	// Animate the model of Earth
+
 	earth.rotation.y += 0.01;
-	earth.position.y = Math.cos( time ) + 0.5;
+	earth.position.y =
+		stand.geometry.parameters.height -
+		ROOMDIMENSION.y / 2 +
+		planet.geometry.parameters.radius +
+		0.05 +
+		Math.pow( Math.sin( time ), 2 ) * stand.geometry.parameters.height * 0.2;
 
 }
 
@@ -595,9 +664,13 @@ function raycast() {
 	raycaster.setFromCamera( mouse, camera );
 	intersects = raycaster.intersectObjects( scene.children, true );
 
-	if ( intersects[ 0 ] ) {
+	let filteredIntersects = intersects.filter(
+		object => object.object.name != "CameraHelper"
+	);
 
-		switch ( intersects[ 0 ].object.name ) {
+	if ( filteredIntersects[ 0 ] ) {
+
+		switch ( filteredIntersects[ 0 ].object.name ) {
 
 			case "Light bulb":
 			case "Button":
@@ -605,21 +678,22 @@ function raycast() {
 				break;
 			case "Door knob":
 				doorWithKnobs.userData.isClosed = ! doorWithKnobs.userData.isClosed;
+
 				if ( doorWithKnobs.userData.isClosed ) {
 
 					doorWithKnobs.position.x = 0;
-					doorWithKnobs.position.z = DIMENSION.z / 2;
+					doorWithKnobs.position.z = ROOMDIMENSION.z / 2;
 					doorWithKnobs.rotation.y = 0;
-					ambient.color = NORMALROOMAMBIENT;
+
+					externalLight.intensity = 0;
 
 				} else {
 
-					doorWithKnobs.position.x = - ( DOORWIDTH / 2 );
-					doorWithKnobs.position.z = DIMENSION.z / 2 - DOORWIDTH / 2;
+					doorWithKnobs.position.x = - ( DOORDIMENSION.x / 2 );
+					doorWithKnobs.position.z = ROOMDIMENSION.z / 2 - DOORDIMENSION.x / 2;
 					doorWithKnobs.rotation.y = Math.PI / 2;
-					ambient.color = point.userData.isOn
-						? NORMALROOMAMBIENT
-						: OUTSIDELIGHTEDAMBIENT;
+
+					externalLight.intensity = externalLightIntensity;
 
 				}
 

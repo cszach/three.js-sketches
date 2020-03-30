@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		{% seo %}
+		<title>{{ page.title | default: site.title }}</title>
+		<link rel="stylesheet" href="/assets/css/main.css" />
+		<link rel="stylesheet" href="/assets/css/home.css" />
+	</head>
+	<body>
+		<div id="heading">
+			<h1>{{ page.heading }}</h1>
+		</div>
+		<div id="showcase">
+			{% for sketch in site.data.sketches reversed %}
+
+			<a href="/{{ sketch.date | date: '%Y/%m/%d' }}/{{ sketch.directory }}">
+				<img src="/sketches/{{ sketch.directory }}/thumbnail.png" />
+			</a>
+
+			{% endfor %}
+		</div>
+		<footer>
+			<p>
+				Copyright &copy; Nguyen Hoang Duong. All Rights Reserved.<br />
+				GitHub: <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.
+				E-mail address: <a href="mailto:{{ site.data.owner.email }}">{{ site.data.owner.email }}</a>.
+			</p>
+		</footer>
+	</body>
+</html>

@@ -1,21 +1,21 @@
-import { WEBGL } from "../../three.js/examples/jsm/WebGL.js";
-import * as THREE from "../../three.js/build/three.module.js";
-import { OrbitControls } from "../../three.js/examples/jsm/controls/OrbitControls.js";
+import { WEBGL } from "../../../three.js/examples/jsm/WebGL.js";
+import * as THREE from "../../../three.js/build/three.module.js";
+import { OrbitControls } from "../../../three.js/examples/jsm/controls/OrbitControls.js";
 
-var scene, camera, renderer, controls; // Scene, camera, renderer, and controls
-var path, format, urls, loader, reflectionCube, refractionCube; // Cube mapping
-var torusKnotGeometry,
+let scene, camera, renderer, controls; // Scene, camera, renderer, and controls
+let path, format, urls, loader, reflectionCube, refractionCube; // Cube mapping
+let torusKnotGeometry,
 	sphereGeometry,
 	reflectiveMaterial,
 	refractiveMaterial,
 	torusKnot,
 	sphere; // Meshes
-var ambient; // Light
-var info; // Information div
+let ambient; // Light
+let info; // Information div
 
-var aspect = window.innerWidth / window.innerHeight;
-var canvas = document.createElement( "canvas" );
-var context = canvas.getContext( "webgl2", { alpha: false } );
+let canvas = document.getElementById( 'app' );
+let aspect = canvas.clientWidth / canvas.clientHeight;
+let context = canvas.getContext( "webgl2", { alpha: false } );
 
 if ( WEBGL.isWebGL2Available() ) {
 
@@ -42,17 +42,15 @@ function init() {
 	controls = new OrbitControls( camera, renderer.domElement );
 
 	camera.position.z = 12;
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	controls.enableZoom = false;
 	controls.enablePan = false;
 	controls.autoRotate = true;
 
-	document.body.appendChild( renderer.domElement );
-
 	// Set up the cube map
 
-	path = "../../assets/cube-maps/Yokohama/";
+	path = "/assets/cube-maps/Yokohama/";
 	format = ".jpg";
 	urls = [
 		path + "posx" + format,
@@ -111,13 +109,6 @@ function init() {
 	// Event handlers
 
 	document.body.addEventListener( "keypress", onKeyPress );
-	window.addEventListener( "resize", onWindowResize );
-
-	// Informative overlay
-
-	info = document.createElement( "div" );
-	info.innerHTML = "Press space to toggle between meshes";
-	document.body.appendChild( info );
 
 }
 
@@ -144,15 +135,17 @@ function onKeyPress( event ) {
 function render() {
 
 	requestAnimationFrame( render );
+
+	if ( canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight ) {
+
+		aspect = canvas.clientWidth / canvas.clientHeight;
+		camera.aspect = aspect;
+		camera.updateProjectionMatrix();
+		renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+
+	}
+
 	controls.update();
 	renderer.render( scene, camera );
-
-}
-
-function onWindowResize() {
-
-	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
-	renderer.setSize( window.innerWidth, window.innerHeight );
 
 }
