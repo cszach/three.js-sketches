@@ -209,7 +209,7 @@ function init() {
 
 	let listener = new THREE.AudioListener();
 	let audio = new THREE.Audio( listener );
-	let media = new Audio( "audio/ambient.mp3" );
+	let media = new Audio( "/sketches/singularity/audio/ambient.mp3" );
 
 	media.loop = true;
 	media.play();
@@ -299,8 +299,9 @@ function intro( length, wait ) {
 
 function onMouseMove( event ) {
 
-	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	let canvasRect = canvas.getBoundingClientRect();
+	mouse.x = ( ( event.clientX - canvasRect.left ) / canvas.clientWidth ) * 2 - 1;
+	mouse.y = - ( ( event.clientY - canvasRect.top ) / canvas.clientHeight ) * 2 + 1;
 
 }
 
