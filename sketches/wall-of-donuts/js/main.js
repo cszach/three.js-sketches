@@ -174,7 +174,7 @@ function init() {
 
 	// Add a door view
 
-	textureLoader.setPath( "/sketches/wall-of-donuts/textures/" );
+	textureLoader.setPath( "textures/" );
 
 	let doorViewImage = textureLoader.load( "doorview.png" );
 	let doorViewGeometry = new THREE.PlaneBufferGeometry( DOORWIDTH, DOORHEIGHT );
@@ -308,7 +308,7 @@ function init() {
 	// Add a model of the Earth
 	// This includes the surface and the atmosphere
 
-	textureLoader.setPath( "/assets/textures/earth/" );
+	textureLoader.setPath( "../../../assets/textures/earth/" );
 
 	planet = new THREE.Mesh(
 		new THREE.SphereBufferGeometry( 2, 50, 50 ),
@@ -346,7 +346,7 @@ function init() {
 	// Add the donuts
 
 	modelLoader = new GLTFLoader();
-	modelLoader.setPath( "/sketches/wall-of-donuts/models/" );
+	modelLoader.setPath( "models/" );
 
 	modelLoader.load( "mint-donut-with-cream-and-sprinkles.glb", function ( gltf ) {
 

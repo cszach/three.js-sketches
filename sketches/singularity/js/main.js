@@ -209,7 +209,7 @@ function init() {
 
 	let listener = new THREE.AudioListener();
 	let audio = new THREE.Audio( listener );
-	let media = new Audio( "/sketches/singularity/audio/ambient.mp3" );
+	let media = new Audio( "audio/ambient.mp3" );
 
 	media.loop = true;
 	media.play();

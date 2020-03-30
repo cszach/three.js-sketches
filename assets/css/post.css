@@ -14,12 +14,13 @@ div#embed {
 	margin: 0 calc( ( 100vw - var(--width) ) / 2 );
 }
 
-div#embed > canvas {
+div#embed > iframe {
 	width: 100% !important;
 	height: 100% !important;
+	border: none;
 }
 
-div#embed > canvas:focus {
+div#embed > iframe:focus {
 	outline: none;
 }
 

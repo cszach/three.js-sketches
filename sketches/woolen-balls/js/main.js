@@ -56,7 +56,7 @@ function init() {
 
 	loader = new THREE.TextureLoader();
 
-	loader.setPath( "/assets/textures/" );
+	loader.setPath( "../../../assets/textures/" );
 
 	geometry = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
 	material = new THREE.MeshStandardMaterial( { color: 0xe0e0e0 } );
