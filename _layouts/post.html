@@ -6,8 +6,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		{% seo %}
 		<title>{{ page.title | default: site.title }}</title>
-		<link rel="stylesheet" href="/assets/css/main.css" />
-		<link rel="stylesheet" href="/assets/css/post.css" />
+		<link rel="stylesheet" href="{{ '/assets/css/main.css' | absolute_url }}" />
+		<link rel="stylesheet" href="{{ '/assets/css/post.css' | absolute_url }}" />
 
 		{% assign sketch = site.data.sketches | where: "directory", page.sketch | first %}
 	</head>
@@ -19,7 +19,7 @@
 			<canvas id="app"></canvas>
 		</div>
 		<div id="buttons">
-			<a class="button" href="/sketches/{{ sketch.directory }}">
+			<a class="button" href="{{ '/sketches' | absolute_url }}/{{ sketch.directory }}">
 				<h3>View in fullscreen</h3>
 			</a>
 			<a class="button"
@@ -41,6 +41,6 @@
 			</p>
 		</footer>
 
-		<script type="module" src="/sketches/{{ sketch.directory }}/js/main.js"></script>
+		<script type="module" src="{{ '/sketches' | absolute_url }}/{{ sketch.directory }}/js/main.js"></script>
 	</body>
 </html>
