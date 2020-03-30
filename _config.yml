@@ -1,0 +1,4 @@
+title: you-create's three.js sketches
+
+exclude: [bundle,node_modules]
+disable_disk_cache: true
