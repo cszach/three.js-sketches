@@ -308,7 +308,7 @@ function init() {
 	// Add a model of the Earth
 	// This includes the surface and the atmosphere
 
-	textureLoader.setPath( "../../../assets/textures/earth/" );
+	textureLoader.setPath( "../../assets/textures/earth/" );
 
 	planet = new THREE.Mesh(
 		new THREE.SphereBufferGeometry( 2, 50, 50 ),
