@@ -10,9 +10,9 @@ not really something that I would call a sketch, I just thought it was nice.
 
 ## Interaction
 
-- Drag your left mouse to orbit around the mesh
+- Drag your left mouse to orbit around the mesh.
 - Press the spacebar on your keyboard to switch between a reflective mesh and a
-  refractive mesh
+  refractive mesh.
 
 ## Acknowledgements
 

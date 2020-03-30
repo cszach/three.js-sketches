@@ -19,14 +19,9 @@ disabled.
 
 ## Acknowledgements
 
-- Textures of wools (can be found [here][texture-01], [here][texture-02], and
-  [here][texture-03]) are from Textures.com, these may not be redistributed by
-  default
-- [White porcelain matcap][matcap] courtesy of [Milos Paripovic][milos], free
-  to use and redistribute by any means
+Textures of wools (can be found [here][1], [here][2], and [here][3]) are from
+Textures.com, these may not be redistributed by default.
 
-[texture-01]: /assets/textures/wool-01
-[texture-02]: /assets/textures/wool-02
-[texture-03]: /assets/textures/wool-03
-[matcap]: /assets/textures/porcelain-white
-[milos]: https://milosparipovic.com
+[1]: {{ "/assets/textures/wool-01" | relative_url }}
+[2]: {{ "/assets/textures/wool-02" | relative_url }}
+[3]: {{ "/assets/textures/wool-03" | relative_url }}

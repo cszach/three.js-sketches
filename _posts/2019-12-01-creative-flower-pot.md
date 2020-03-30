@@ -11,7 +11,9 @@ original flower pot was in 2D. This is my attempt at making a 3D version of it.
 It is not yet similar to the original one, but I had fun making it. The flowers
 are randomly generated, so sometimes their placement is ugly. That's why the
 version I sent to my teacher was not randomly generated but manually coded (you
-can see it [here](/sketches/{{ page.sketch }}/its-for-you-ms-trinh.html)).
+can see it [here][1]).
+
+[1]: {{ "/sketches" | absolute_url }}/{{ page.sketch }}/its-for-you-ms-trinh.html
 
 ## Interaction
 

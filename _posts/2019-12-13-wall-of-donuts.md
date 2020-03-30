@@ -21,10 +21,6 @@ A wall with donuts sticked on it, because why not?
 
 ## Acknowledgements
 
-[dawid]: https://unsplash.com/@davealmine
-[dawid-photo]: https://unsplash.com/photos/xclq1CPq1M4
-[doorview]: textures/doorview.png
-
 The donuts were made by me using Microsoft's Paint 3D.
 
 Thanks are due to...
@@ -32,6 +28,10 @@ Thanks are due to...
 - [Dawid Zawila][dawid], for the public-domain photograph from which the door
   view image was composed from (original photo
   [here](https://unsplash.com/photos/xclq1CPq1M4), cropped image used in the
-  sketch [here]({{ '/' | absolute_url }}/sketches/{{ page.sketch }}/textures/doorview.png))
+  sketch [here][doorview]).
 - whoever (probably NASA) owns or produced the textures of parts of the Earth
-  (I took them from the three.js repository)
+  (I took them from the three.js repository).
+
+[dawid]: https://unsplash.com/@davealmine
+[dawid-photo]: https://unsplash.com/photos/xclq1CPq1M4
+[doorview]: {{ '/sketches' | relative_url }}/{{ page.sketch }}/textures/doorview.png
