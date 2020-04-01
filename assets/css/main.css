@@ -1,0 +1,144 @@
+@import url( '/assets/fonts/Lato/Lato-Regular.ttf' ); /* 400 */
+@import url( '/assets/fonts/Lato/Lato-Light.ttf' ); /* 300 */
+@import url( '/assets/fonts/Lato/Lato-LightItalic.ttf' ); /* 300 italic */
+@import url( '/assets/fonts/Lato/Lato-Bold.ttf' ); /* 700 */
+@import url( '/assets/fonts/Lato/Lato-BoldItalic.ttf' ); /* 700 italic */
+
+:root {
+	--bg-color: black;
+	--fg-color: white;
+	--accent-color: #13daec;
+}
+
+html {
+	font-size: 24pt;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	background-color: var(--bg-color);
+	color: white;
+	font-family: Lato, Helvetica, 'sans-serif';
+	font-weight: 300;
+	overflow-x: hidden;
+}
+
+::selection {
+	color: var(--accent-color);
+	background-color: var(--bg-color);
+}
+
+::-moz-selection {
+	color: var(--accent-color);
+	background-color: var(--bg-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	padding: 0;
+	font-weight: 300;
+}
+
+h2, h3, h4, h5, h6 {
+	font-weight: 400;
+	color: var(--accent-color);
+}
+
+h1 {
+	font-size: 1.8em;
+}
+
+h2 {
+	font-size: 1.2em;
+}
+
+h3 {
+	font-size: 0.9em;
+}
+
+p, span, ul, ol {
+	font-size: 0.7em;
+}
+
+a {
+	color: var(--accent-color);
+	text-decoration: none;
+}
+
+a:focus {
+	outline: none;
+}
+
+a.button {
+	display: inline-block;
+	padding: 0.5em;
+	font-weight: 300;
+	color: var(--accent-color);
+	border: 1px var(--accent-color) solid;
+
+	transition: 0.15s;
+}
+
+a.button * {
+	color: inherit;
+	font-weight: inherit;
+}
+
+a.button:hover {
+	color: var(--bg-color);
+	background-color: var(--accent-color);
+	border: 1px var(--accent-color) solid;
+}
+
+footer > p {
+	text-align: center;
+}
+
+@media all and ( min-width: 2800px ) {
+
+	html {
+		font-size: 46pt;
+	}
+
+}
+
+@media all and ( min-width: 2200px ) and ( max-width: 2799px ) {
+
+	html {
+		font-size: 26pt;
+	}
+
+}
+
+@media all and ( max-width: 1280px ) {
+
+	html {
+		font-size: 20pt;
+	}
+
+}
+
+@media all and ( max-width: 980px ) {
+
+	html {
+		font-size: 18pt;
+	}
+
+}
+
+@media all and ( max-width: 736px ) {
+
+	html {
+		font-size: 16pt;
+	}
+
+}
+
+@media all and ( max-width: 480px ) {
+
+	html {
+		font-size: 14pt;
+	}
+
+}

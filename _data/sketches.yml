@@ -1,0 +1,10 @@
+- name: Woolen Balls
+  directory: woolen-balls
+- name: Reflective Torus Knot
+  directory: reflective-torus-knot
+- name: Creative Flower Pot
+  directory: creative-flower-pot
+- name: Wall of Donuts
+  directory: wall-of-donuts
+- name: Singularity
+  directory: singularity

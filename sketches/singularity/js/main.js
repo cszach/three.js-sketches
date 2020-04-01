@@ -161,9 +161,7 @@ function init() {
 	sphereGeo = new THREE.SphereBufferGeometry( 20, 20, 20 );
 	sphereMat = new THREE.MeshBasicMaterial( {
 		color: 0xffffff,
-		transparent: true,
-		opacity: 0.8,
-		wireframe: true,
+		wireframe: true
 	} );
 
 	sphere = new THREE.Mesh( sphereGeo, sphereMat );
@@ -247,9 +245,9 @@ function render( time ) {
 
 	// Animate the background sphere
 
-	sphere.rotation.x = Math.sin( time * 0.0003 );
-	sphere.rotation.y = Math.sin( time * 0.0007 );
-	sphere.rotation.z = Math.sin( time * 0.0005 );
+	sphere.rotation.x = Math.sin( time * 0.00006 );
+	sphere.rotation.y = Math.sin( time * 0.00014 );
+	sphere.rotation.z = Math.sin( time * 0.0001 );
 
 	// Animate the monoliths
 
@@ -301,8 +299,9 @@ function intro( length, wait ) {
 
 function onMouseMove( event ) {
 
-	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	let canvasRect = canvas.getBoundingClientRect();
+	mouse.x = ( ( event.clientX - canvasRect.left ) / canvas.clientWidth ) * 2 - 1;
+	mouse.y = - ( ( event.clientY - canvasRect.top ) / canvas.clientHeight ) * 2 + 1;
 
 }
 

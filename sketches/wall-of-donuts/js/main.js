@@ -21,136 +21,87 @@
  * @author Nguyen Hoang Duong / https://github.com/you-create
  */
 
+import { WEBGL } from "../../../three.js/examples/jsm/WebGL.js";
+import * as THREE from "../../../three.js/build/three.module.js";
+import { FlyControls } from "../../../three.js/examples/jsm/controls/FlyControls.mod.js";
+import { OrbitControls } from "../../../three.js/examples/jsm/controls/OrbitControls.js";
+import { Reflector } from "../../../three.js/examples/jsm/objects/Reflector.js";
+import { GLTFLoader } from "../../../three.js/examples/jsm/loaders/GLTFLoader.js";
+import { CanvasHelper } from "../../../lib/misc/CanvasHelper.js";
+import { Room } from "./Room.js";
+
 // Everything inside the scene + variables used for raycasting, animation,
 // and loaders
 
-var scene, camera, first, third, renderer, fly, orbit;
-var room; // Room
-var mirror, mirrorSurface, mirrorMesh; // Mirror
-var door, doorKnob01, doorKnob02, doorWithKnobs, doorView; // Room's door
-var button, buttonLight; // Light switch
-var cube, torus, stand, earth, planet, clouds; // Miscellaenous objects
-var ambient, point, bulb; // Lights
-var donut01, donut02, donut03, donut04, donut05, donut06, donut07; // Donuts
-var buttonMaterial, bulbMaterial; // Materials that are not static
-var raycaster, mouse, intersects; // Raycasting
-var textureLoader, modelLoader; // Loaders
-var firstView; // Helpers
-var time, clock; // Animation
-var debugging = false; // Is debugging?
+let scene, camera, first, third, renderer, fly, orbit;
+let room; // Room
+let mirror, mirrorSurface, mirrorMesh; // Mirror
+let door, doorKnob01, doorKnob02, doorWithKnobs, doorView; // Room's door
+let button, buttonLight; // Light switch
+let cube, torus, stand, earth, planet, clouds; // Miscellaenous objects
+let ambient, point, bulb; // Lights
+let donut01, donut02, donut03, donut04, donut05, donut06, donut07; // Donuts
+let buttonMaterial, bulbMaterial; // Materials that are not static
+let raycaster, mouse, intersects; // Raycasting
+let textureLoader, modelLoader; // Loaders
+let firstView; // Helpers
+let time, clock; // Animation
+let debugging = false; // Is debugging?
 
 // Variables used by the camera and the renderer
 
-var aspect = window.innerWidth / window.innerHeight;
-var canvas = document.createElement( "canvas" );
-var context = canvas.getContext( "webgl2", { alpha: false } );
+let canvas = document.getElementById( 'app' );
+let context = canvas.getContext( "webgl2", { alpha: false } );
+let canvasHelper;
 
 // Constants
 
-var RED = new THREE.Color( 0xff0000 );
-var GREEN = new THREE.Color( 0x00ff00 );
-var BLUE = new THREE.Color( 0x0000ff );
-var OFFSET = 0.001; // The amount of translation used to avoid z-fighting
-var DIMENSION = new THREE.Vector3( 30, 20, 20 ); // The dimension of the room
-var DOORWIDTH = 9; // The width of the room's door
-var DOORHEIGHT = 15; // The height of the room's door
-var NORMALROOMAMBIENT = new THREE.Color( 0x222222 ); // Color of the ambient light when the room's door is closed
-var OUTSIDELIGHTEDAMBIENT = new THREE.Color( 0x555555 ); // Color of the ambient light when the room's door is opened
-var POINTLIGHTINTENSITY = 1.75; // The intensity of the room's point light when it is on
+let RED = new THREE.Color( 0xff0000 );
+let GREEN = new THREE.Color( 0x00ff00 );
+let BLUE = new THREE.Color( 0x0000ff );
+let OFFSET = 0.001; // The amount of translation used to avoid z-fighting
+let DIMENSION = new THREE.Vector3( 30, 20, 20 ); // The dimension of the room
+let DOORWIDTH = 9; // The width of the room's door
+let DOORHEIGHT = 15; // The height of the room's door
+let NORMALROOMAMBIENT = new THREE.Color( 0x222222 ); // Color of the ambient light when the room's door is closed
+let OUTSIDELIGHTEDAMBIENT = new THREE.Color( 0x555555 ); // Color of the ambient light when the room's door is opened
+let POINTLIGHTINTENSITY = 1.75; // The intensity of the room's point light when it is on
 
-/**
- * A class that represents a room made up of four walls, a floor and a ceilling
- *
- * @param {Vector3} dimension The dimension of the room, determined by a
- * THREE.Vector3, where the y value determines the height of the room
- * @param {Material} wallMaterial The material for the walls
- * @param {Material} floorMaterial The material for the floor
- * @param {Material} ceilingMaterial The material for the ceiling
- */
-function Room( dimension, wallMaterial, floorMaterial, ceilingMaterial ) {
-
-	THREE.Group.apply( this, arguments );
-
-	let front, back, left, right; // Walls
-	let floor, ceiling;
-
-	front = new THREE.Mesh(
-		new THREE.PlaneBufferGeometry( dimension.x, dimension.y ),
-		wallMaterial
-	);
-	back = front.clone();
-	left = new THREE.Mesh(
-		new THREE.PlaneBufferGeometry( dimension.z, dimension.y ),
-		wallMaterial
-	);
-	right = left.clone();
-
-	front.position.set( 0, 0, - dimension.z / 2 );
-	back.position.set( 0, 0, dimension.z / 2 );
-	left.position.set( - dimension.x / 2, 0, 0 );
-	right.position.set( dimension.x / 2, 0, 0 );
-
-	back.rotation.x = Math.PI;
-	left.rotation.y = Math.PI / 2;
-	right.rotation.y = - Math.PI / 2;
-
-	floor = new THREE.Mesh(
-		new THREE.PlaneBufferGeometry( dimension.x, dimension.z ),
-		floorMaterial
-	);
-	ceiling = new THREE.Mesh(
-		new THREE.PlaneBufferGeometry( dimension.x, dimension.z ),
-		ceilingMaterial
-	);
-
-	floor.position.y = - dimension.y / 2;
-	ceiling.position.y = dimension.y / 2;
-
-	floor.rotation.x = - Math.PI / 2;
-	ceiling.rotation.x = Math.PI / 2;
-
-	front.receiveShadow = back.receiveShadow = left.receiveShadow = right.receiveShadow = floor.receiveShadow = ceiling.receiveShadow = true;
-
-	this.add( front, back, left, right, floor, ceiling );
-
-}
-
-Room.prototype = Object.create( THREE.Group.prototype );
-Room.prototype.constructor = Room;
-
-if ( THREE.WEBGL.isWebGL2Available() ) {
+if ( WEBGL.isWebGL2Available() ) {
 
 	init();
 	render();
 
 } else {
 
-	document.body.appendChild( THREE.WEBGL.getWebGL2ErrorMessage() );
+	document.body.appendChild( WEBGL.getWebGL2ErrorMessage() );
 
 }
 
 function init() {
 
+	canvasHelper = new CanvasHelper( canvas );
+
 	// Set up the scene, the camera, the renderer, and the controls
 
 	scene = new THREE.Scene();
-	first = new THREE.PerspectiveCamera( 75, aspect, 0.1, 100 );
+	first = new THREE.PerspectiveCamera( 75, canvasHelper.aspectRatio, 0.1, 100 );
 	firstView = new THREE.CameraHelper( first );
-	third = new THREE.PerspectiveCamera( 75, aspect, 0.1, 1000 );
+	third = new THREE.PerspectiveCamera( 75, canvasHelper.aspectRatio, 0.1, 1000 );
 	renderer = new THREE.WebGLRenderer( {
 		canvas: canvas,
 		context: context,
 		antialias: true
 	} );
 	clock = new THREE.Clock();
-	fly = new THREE.FlyControls( first, renderer.domElement );
-	orbit = new THREE.OrbitControls( third, renderer.domElement );
+	fly = new FlyControls( first, renderer.domElement );
+	orbit = new OrbitControls( third, renderer.domElement );
 
 	first.position.set( 0, 2, 3 );
 	firstView.visible = debugging;
 	third.position.set( 0, 20, 15 );
 	camera = debugging ? third : first;
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setSize( ...canvasHelper.dimension );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.shadowMap.enabled = true;
 	fly.movementSpeed = 100;
@@ -158,8 +109,9 @@ function init() {
 	fly.setMouseMoveOnly();
 	orbit.autoRotate = true;
 
-	document.body.appendChild( renderer.domElement );
 	scene.add( firstView );
+
+	canvasHelper.bind( camera, renderer );
 
 	// Create the room
 
@@ -272,9 +224,9 @@ function init() {
 		MIRRORHEIGHT
 	);
 
-	mirrorSurface = new THREE.Reflector( mirrorSurfaceGeometry, {
-		textureWidth: window.innerWidth * window.devicePixelRatio,
-		textureHeight: window.innerWidth * window.devicePixelRatio,
+	mirrorSurface = new Reflector( mirrorSurfaceGeometry, {
+		textureWidth: canvas.clientWidth * window.devicePixelRatio,
+		textureHeight: canvas.clientHeight * window.devicePixelRatio,
 		recursion: 1
 	} );
 	mirrorSurface.position.z = MIRRORDEPTH / 2;
@@ -393,7 +345,7 @@ function init() {
 
 	// Add the donuts
 
-	modelLoader = new THREE.GLTFLoader();
+	modelLoader = new GLTFLoader();
 	modelLoader.setPath( "models/" );
 
 	modelLoader.load( "mint-donut-with-cream-and-sprinkles.glb", function ( gltf ) {
@@ -496,7 +448,6 @@ function init() {
 
 	// Event listeners
 
-	window.addEventListener( "resize", onWindowResize, false );
 	window.addEventListener( "mousemove", onMouseMove, false );
 	window.addEventListener( "mousedown", onMouseClick, false );
 	document.body.addEventListener( "keypress", onKeyPress, false );
@@ -529,15 +480,6 @@ function switchLight() {
 
 }
 
-function onWindowResize() {
-
-	aspect = window.innerWidth / window.innerHeight;
-	camera.aspect = aspect;
-	camera.updateProjectionMatrix();
-	renderer.setSize( window.innerWidth, window.innerHeight );
-
-}
-
 function onKeyPress( event ) {
 
 	// Switching camera for debugging purposes
@@ -549,6 +491,7 @@ function onKeyPress( event ) {
 
 				camera = camera == first ? third : first;
 				firstView.visible = camera == third;
+				canvasHelper.bind( camera, renderer );
 
 			}
 			break;
@@ -558,6 +501,7 @@ function onKeyPress( event ) {
 
 				camera = first;
 				firstView.visible = false;
+				canvasHelper.bind( camera, renderer );
 
 			}
 
@@ -579,8 +523,9 @@ function animate() {
 
 function onMouseMove( event ) {
 
-	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	let canvasRect = canvas.getBoundingClientRect();
+	mouse.x = ( ( event.clientX - canvasRect.left ) / canvas.clientWidth ) * 2 - 1;
+	mouse.y = - ( ( event.clientY - canvasRect.top ) / canvas.clientHeight ) * 2 + 1;
 
 }
 
@@ -593,7 +538,9 @@ function onMouseClick() {
 function raycast() {
 
 	raycaster.setFromCamera( mouse, camera );
-	intersects = raycaster.intersectObjects( scene.children, true );
+	intersects = raycaster.intersectObjects( scene.children, true ).filter(
+		( intersect ) => intersect.object.visible
+	);
 
 	if ( intersects[ 0 ] ) {
 
@@ -632,6 +579,8 @@ function raycast() {
 function render( event ) {
 
 	requestAnimationFrame( render );
+
+	canvasHelper.update();
 
 	time = event * 0.001;
 	animate();
