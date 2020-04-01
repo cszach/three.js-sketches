@@ -14,10 +14,10 @@
 			<h1>{{ page.heading }}</h1>
 		</div>
 		<div id="showcase">
-			{% for sketch in site.data.sketches reversed %}
+			{% for post in site.posts %}
 
-			<a href="{{ sketch.date | date: '/%Y/%m/%d' | relative_url }}/{{ sketch.directory }}">
-				<img src="{{ '/sketches' | relative_url }}/{{ sketch.directory }}/thumbnail.png" />
+			<a href="{{ post.url | relative_url }}">
+				<img src="{{ '/sketches' | relative_url }}/{{ post.sketch }}/thumbnail.png" />
 			</a>
 
 			{% endfor %}
