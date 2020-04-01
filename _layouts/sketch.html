@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% assign directory = page.dir | remove_first: '/sketches' | remove: '/' %}
+		{% assign sketch = site.data.sketches | where: 'directory', directory | first %}
+
+		<meta charset="utf-8" />
+		<title>{{ sketch.name }} | {{ site.title }}</title>
+		<style>
+			body {
+				margin: 0;
+				overflow: hidden;
+				width: 100vw;
+				height: 100vh;
+			}
+
+			canvas {
+				width: 100% !important;
+				height: 100% !important;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="app"></canvas>
+
+		{{ content }}
+
+		<script type="module" src="js/main.js"></script>
+	</body>
+</html>
