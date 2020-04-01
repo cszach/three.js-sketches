@@ -14,8 +14,8 @@ selected few.
 <table>
     <tr>
         <td style="text-align: center">
-            <a href="https://you-create.github.io/three.js-sketches/2020/03/15/singularity">
-                <img src="sketches/singularity/thumbnail.png" />
+            <a href="https://you-create.github.io/three.js-sketches/posts/singularity">
+                <img width="600" src="sketches/singularity/thumbnail.png" />
             </a>
         </td>
         <td style="text-align: left">
@@ -25,8 +25,8 @@ selected few.
     </tr>
     <tr>
         <td style="text-align: center">
-            <a href="https://you-create.github.io/three.js-sketches/2020/03/15/wall-of-donuts">
-                <img src="sketches/wall-of-donuts/thumbnail.png" />
+            <a href="https://you-create.github.io/three.js-sketches/posts/wall-of-donuts">
+                <img width="600" src="sketches/wall-of-donuts/thumbnail.png" />
             </a>
         </td>
         <td style="text-align: left">
@@ -35,8 +35,8 @@ selected few.
     </tr>
     <tr>
         <td style="text-align: center">
-            <a href="https://you-create.github.io/three.js-sketches/2020/03/15/creative-flower-pot">
-                <img src="sketches/creative-flower-pot/thumbnail.png" />
+            <a href="https://you-create.github.io/three.js-sketches/posts/creative-flower-pot">
+                <img width="600" src="sketches/creative-flower-pot/thumbnail.png" />
             </a>
         </td>
         <td style="text-align: left">
