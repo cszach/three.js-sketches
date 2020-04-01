@@ -1,4 +1,18 @@
+# Site
+
 title: you-create's three.js sketches
+
+# Pages
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      permalink: /posts/:title
+
+# Dev
 
 exclude: [bundle,node_modules]
 disable_disk_cache: true
