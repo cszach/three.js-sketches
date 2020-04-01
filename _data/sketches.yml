@@ -1,15 +1,10 @@
-- name: woolen-balls
+- name: Woolen Balls
   directory: woolen-balls
-  date: 2019-11-12
-- name: reflective-torus-knot
+- name: Reflective Torus Knot
   directory: reflective-torus-knot
-  date: 2019-11-15
-- name: creative-flower-pot
+- name: Creative Flower Pot
   directory: creative-flower-pot
-  date: 2019-12-01
-- name: wall-of-donuts
+- name: Wall of Donuts
   directory: wall-of-donuts
-  date: 2019-12-13
-- name: singularity
+- name: Singularity
   directory: singularity
-  date: 2020-03-15
