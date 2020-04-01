@@ -1,54 +1,64 @@
 # My three.js sketches
 
-These are my three.js sketches, which are made possible by
-[three.js](https://threejs.org). :art:
+[website]: https://you-create.github.io/three.js-sketches
 
-The table below lists all of the sketches, most recent ones are placed first.
-Click on any thumbnail to jump right into a sketch. Click on the link under
-the thumbnail to see the sketch's source code. Enjoy! :lollipop:
+This repository contains my [three.js](https://threejs.org) sketches; basically,
+anything I have created with the library that I find cool! They are all
+displayed on :point_right: [this website][website] :point_left:.
+
+## :star: Highlights
+
+[**Visit the website**][website] to see all of my sketches! Here are just a 
+selected few.
 
 <table>
     <tr>
-        <td align="center">
-            <a href="https://you-create.github.io/three.js-sketches/sketches/singularity"><img src="sketches/singularity/thumbnail.png"/></a><br/>
-            <a href="sketches/singularity/">singularity</a>
+        <td style="text-align: center">
+            <a href="https://you-create.github.io/three.js-sketches/2020/03/15/singularity">
+                <img src="sketches/singularity/thumbnail.png" />
+            </a>
         </td>
-        <td align="center">
-            <a href="https://you-create.github.io/three.js-sketches/sketches/wall-of-donuts"><img src="sketches/wall-of-donuts/thumbnail.png"/></a><br/>
-            <a href="sketches/wall-of-donuts/">wall-of-donuts</a>
-        </td>
-        <td align="center">
-            <a href="https://you-create.github.io/three.js-sketches/sketches/creative-flower-pot"><img src="sketches/creative-flower-pot/thumbnail.png"/></a><br/>
-            <a href="sketches/creative-flower-pot/">creative-flower-pot</a>
-        </td>
-        <td align="center">
-            <a href="https://you-create.github.io/three.js-sketches/sketches/reflective-torus-knot"><img src="sketches/reflective-torus-knot/thumbnail.png"/></a><br/>
-            <a href="sketches/reflective-torus-knot/">reflective-torus-knot</a>
+        <td style="text-align: left">
+            A metaphysical space that evokes emotions to complement with
+            solitude and depression.
         </td>
     </tr>
     <tr>
-        <td align="center">
-            <a href="https://you-create.github.io/three.js-sketches/sketches/woolen-balls"><img src="sketches/woolen-balls/thumbnail.png"/></a><br/>
-            <a href="sketches/woolen-balls/">woolen-balls</a>
+        <td style="text-align: center">
+            <a href="https://you-create.github.io/three.js-sketches/2020/03/15/wall-of-donuts">
+                <img src="sketches/wall-of-donuts/thumbnail.png" />
+            </a>
+        </td>
+        <td style="text-align: left">
+            Some gigantic donuts on a wall, literally.
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: center">
+            <a href="https://you-create.github.io/three.js-sketches/2020/03/15/creative-flower-pot">
+                <img src="sketches/creative-flower-pot/thumbnail.png" />
+            </a>
+        </td>
+        <td style="text-align: left">
+            A 3D version of the creative flower pot that I gave to one of my
+            beloved teacher as a gift on Vietnamese Teachers' Day 2019.
         </td>
     </tr>
 </table>
 
 ## :open_file_folder: Directory structure
 
-- `README.md`: This document
-- `mktos.sh`: The Shell script that is used to generate the table above
-- `.gitignore`: Git ignores
-- `.editorconfig`: EditorConfig file
-- `.eslintrc.js`: ESLint configuration file, which tells ESLint to lint
-  according to Mr. Doob's coding style™
-- `.imgbotconfig`: ImgBot configuration file
-- `package.json`: The project's manifest, includes dependencies info
-- `three.js`: The three.js repository but only the files that are used by the
-  sketches are presented
-- `assets/`: Assets (including textures) used by the sketches
-- `common/`: Other common files and templates
-- `sketches/`: The sketches, each child directory for one sketch
+- `sketches/`: My three.js sketches, one for each sub-directory
+- `assets/`: Contains shared CSS files, fonts, textures, images, etc.
+- `three.js/`: A portion of the three.js repository needed by the sketches
+- `lib/`: Contains other shared libraries, frameworks, and JavaScript files
+- `common/`: Contains templates
+- `_data/`, `_layouts/`, `_posts`, `_config.yml`, `index.md`, `Gemfile`,
+  `Gemfile.lock`: Directories and files that you know very well if you've ever
+  worked with a Jekyll website
+- `README.md`: The document you are reading
+- The rest of the files at the root directory: Various configuration files used
+  by Git, NPM, and what not
 
 ## :page_with_curl: Copyright
 
@@ -59,7 +69,10 @@ the thumbnail to see the sketch's source code. Enjoy! :lollipop:
 Copyright :copyright: 2019 by Nguyen Hoang Duong (<you_create@protonmail.com>).
 
 Currently the source code is not licensed and is meant for educational purposes.
-See [this page][no-lic] by GitHub to know what you are supposed to do. You can suggest a better license for this project by opening a new issue.
+See [this page][no-lic] by GitHub to know what you are supposed to do. However,
+I'm considering a Creative Commons license, and I will make my final decision
+as soon as possible. You can suggest a better license for this project by
+opening a new issue.
 
 ### Textures
 
