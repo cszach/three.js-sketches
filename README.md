@@ -74,6 +74,7 @@ and guides). Once you've got that installed, you need to install the Bundler
 gem - which is needed to install dependencies - with:
 
 ```shell
+# Before you enter this command, you must have Ruby installed
 gem install bundler
 ```
 
