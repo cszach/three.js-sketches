@@ -63,7 +63,7 @@ function init() {
 	// SCENE, CAMERA, RENDERER, CONTROLS
 
 	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera( 75, canvasHelper.aspectRatio, 0.1, 1000 );
+	camera = new THREE.PerspectiveCamera( 75, canvasHelper.aspect, 0.1, 1000 );
 	renderer = new THREE.WebGLRenderer( {
 		canvas,
 		context,
@@ -82,7 +82,7 @@ function init() {
 	// Renderer's must-set
 
 	renderer.setPixelRatio( window.devicePixelRatio );
-	renderer.setSize( ...canvasHelper.dimension );
+	renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
 	// Physically correct lighting settings
 

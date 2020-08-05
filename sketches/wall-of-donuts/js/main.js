@@ -101,7 +101,7 @@ function init() {
 	firstView.visible = debugging;
 	third.position.set( 0, 20, 15 );
 	camera = debugging ? third : first;
-	renderer.setSize( ...canvasHelper.dimension );
+	renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.shadowMap.enabled = true;
 	fly.movementSpeed = 100;
