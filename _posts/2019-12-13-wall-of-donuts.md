@@ -7,8 +7,6 @@ type: single
 
 {% include sketch.html directory="wall-of-donuts" display="big" %}
 
-## Description
-
 A wall with donuts sticked on it, because why not?
 
 ## Interaction

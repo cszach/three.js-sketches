@@ -7,8 +7,6 @@ type: single
 
 {% include sketch.html directory="creative-flower-pot" display="big" %}
 
-## Description
-
 On Vietnamese Teachers' Day 2019, I decided to draw a creative flower pot as a
 gift to my beloved Creative Thinking teacher. I drew it on a card so the
 original flower pot was in 2D. This is my attempt at making a 3D version of it.

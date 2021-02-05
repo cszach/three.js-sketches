@@ -7,8 +7,6 @@ type: single
 
 {% include sketch.html directory="singularity" display="big" %}
 
-## Description
-
 **_singularity_** is a little space I have made for all of the people feeling
 lonely or hopeless out there to sink in. I don't expect it to really cure
 people's negative feelings, but I wanted it to evoke a certain complementary 

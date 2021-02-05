@@ -7,8 +7,6 @@ type: single
 
 {% include sketch.html directory="woolen-balls" display="big" %}
 
-## Description
-
 Some woolen balls under some spot lights. Lights and shadows are intended to be
 physically correct, but I know they are not. In real-world scale, each of the
 woolen balls is 10cm in diameter.
