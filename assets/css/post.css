@@ -1,17 +1,32 @@
-div#heading {
+h1 {
 	height: 33vh;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
-div#embed {
-	--width: 70vw;
+:root {
 	--aspect: calc( 16 / 9 );
+}
 
+div#embed.big {
+	--width: 80vw;
+	margin: 0px -10vw;
 	width: var(--width);
 	height: calc( var(--width) / var(--aspect) );
-	margin: 0 calc( ( 100vw - var(--width) ) / 2 );
+}
+
+div#embed.normal {
+	--width: 60vw;
+	width: var(--width);
+	height: calc( var(--width) / var(--aspect) );
+}
+
+div#embed.small {
+	--width: 40vw;
+	margin: 0px 10vw;
+	width: var(--width);
+	height: calc( var(--width) / var(--aspect) );
 }
 
 div#embed > iframe {
@@ -37,7 +52,11 @@ div#buttons > .button {
 }
 
 div#content {
-	margin: 3em 10vw;
+	margin: 0px 20vw;
+}
+
+footer {
+	font-size: 0.7em;
 }
 
 @media all and ( max-width: 480px ) and ( orientation: portrait ) {
