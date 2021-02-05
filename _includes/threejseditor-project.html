@@ -1,0 +1,12 @@
+<div id="embed" class="{{ include.display }}">
+	<iframe src="{{ '/sketches' | relative_url }}/{{ include.directory }}" loading="lazy"></iframe>
+</div>
+<div id="buttons">
+	<a class="button" href="{{ '/sketches' | relative_url }}/{{ include.directory }}">
+		<h3>View in fullscreen</h3>
+	</a>
+	<a class="button"
+	   href="https://threejs.org/editor/#file={{ '/sketches' | absolute_url }}/{{ include.directory }}/app.json">
+		<h3>Open in three.js editor</h3>
+	</a>
+</div>
