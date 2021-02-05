@@ -1,7 +1,11 @@
 ---
 layout: post
-sketch: creative-flower-pot
+type: single
 ---
+
+# Creative Flower Pot
+
+{% include sketch.html directory="creative-flower-pot" display="big" %}
 
 ## Description
 

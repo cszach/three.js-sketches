@@ -1,7 +1,11 @@
 ---
 layout: post
-sketch: reflective-torus-knot
+type: single
 ---
+
+# Reflective Torus Knot
+
+{% include sketch.html directory="reflective-torus-knot" display="big" %}
 
 ## Description
 

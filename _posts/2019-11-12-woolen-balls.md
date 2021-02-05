@@ -1,7 +1,11 @@
 ---
 layout: post
-sketch: woolen-balls
+type: single
 ---
+
+# Woolen Balls
+
+{% include sketch.html directory="woolen-balls" display="big" %}
 
 ## Description
 

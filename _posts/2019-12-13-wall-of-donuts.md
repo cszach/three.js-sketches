@@ -1,7 +1,11 @@
 ---
 layout: post
-sketch: wall-of-donuts
+type: single
 ---
+
+# Wall of Donuts
+
+{% include sketch.html directory="wall-of-donuts" display="big" %}
 
 ## Description
 

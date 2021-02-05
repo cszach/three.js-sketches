@@ -1,7 +1,11 @@
 ---
 layout: post
-sketch: singularity
+type: single
 ---
+
+# Singularity
+
+{% include sketch.html directory="singularity" display="big" %}
 
 ## Description
 
