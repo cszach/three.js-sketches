@@ -1,6 +1,20 @@
-# Site
+# SEO
 
-title: / three.js sketches
+title: Duong / three.js sketches
+tagline: Duong's three.js sketches
+description: Duong's 3D work, powered by three.js
+author: Nguyen Hoang Duong
+social:
+  name: Nguyen Hoang Duong
+  links:
+    - https://github.com/you-create
+    - https://www.instagram.com/thechonkypenguin
+    - https://unsplash.com/@you_create
+    - https://dribbble.com/you_create
+    - https://medium.com/@you_create
+
+plugins:
+  - jekyll-seo-tag
 
 # Pages
 
@@ -10,7 +24,7 @@ defaults:
       path: ""
       type: "posts"
     values:
-      permalink: /posts/:title
+      permalink: /sketch/:title
 
 # Dev
 
