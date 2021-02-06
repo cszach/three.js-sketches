@@ -1,6 +1,7 @@
 ---
 layout: post
 type: single
+image: /thumbs/2020-12-06.jpg
 ---
 
 # Lonely Night

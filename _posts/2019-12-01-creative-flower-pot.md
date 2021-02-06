@@ -1,6 +1,7 @@
 ---
 layout: post
 type: single
+image: /thumbs/2019-12-01.jpg
 ---
 
 # Creative Flower Pot

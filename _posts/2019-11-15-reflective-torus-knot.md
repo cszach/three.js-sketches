@@ -1,6 +1,7 @@
 ---
 layout: post
 type: single
+image: /thumbs/2019-11-15.jpg
 ---
 
 # Reflective Torus Knot

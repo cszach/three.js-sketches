@@ -1,6 +1,7 @@
 ---
 layout: post
 type: single
+image: /thumbs/2020-03-15.jpg
 ---
 
 # Singularity

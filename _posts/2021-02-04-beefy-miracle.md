@@ -1,6 +1,7 @@
 ---
 layout: post
 type: single
+image: /thumbs/2021-02-04.jpg
 ---
 
 # Beefy Miracle
