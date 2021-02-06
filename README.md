@@ -14,8 +14,20 @@ selected few.
 <table>
     <tr>
         <td style="text-align: center">
-            <a href="https://you-create.github.io/three.js-sketches/posts/singularity">
-                <img width="600" src="sketches/singularity/thumbnail.png" />
+            <a href="https://you-create.github.io/three.js-sketches/sketch/beefy-miracle">
+                <img width="600" src="thumbs/2021-02-04.jpg" />
+            </a>
+        </td>
+        <td style="text-align: left">
+            His beef could be smelled feet away from the kitchen. When one
+            installs the original Red Hat Linux, one is bound to see his Mighty
+            presence, and certainly to see the mustard indicates progress.
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: center">
+            <a href="https://you-create.github.io/three.js-sketches/sketch/singularity">
+                <img width="600" src="thumbs/2020-03-15.jpg" />
             </a>
         </td>
         <td style="text-align: left">
@@ -25,8 +37,8 @@ selected few.
     </tr>
     <tr>
         <td style="text-align: center">
-            <a href="https://you-create.github.io/three.js-sketches/posts/wall-of-donuts">
-                <img width="600" src="sketches/wall-of-donuts/thumbnail.png" />
+            <a href="https://you-create.github.io/three.js-sketches/sketch/wall-of-donuts">
+                <img width="600" src="thumbs/2019-12-13.jpg" />
             </a>
         </td>
         <td style="text-align: left">
@@ -35,8 +47,8 @@ selected few.
     </tr>
     <tr>
         <td style="text-align: center">
-            <a href="https://you-create.github.io/three.js-sketches/posts/creative-flower-pot">
-                <img width="600" src="sketches/creative-flower-pot/thumbnail.png" />
+            <a href="https://you-create.github.io/three.js-sketches/sketch/creative-flower-pot">
+                <img width="600" src="thumbs/2019-12-01.jpg" />
             </a>
         </td>
         <td style="text-align: left">
