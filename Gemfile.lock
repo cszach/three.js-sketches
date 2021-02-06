@@ -261,6 +261,8 @@ PLATFORMS
 DEPENDENCIES
   github-pages
   jekyll
+  jekyll-github-metadata
+  jekyll-seo-tag
 
 BUNDLED WITH
    2.1.4
