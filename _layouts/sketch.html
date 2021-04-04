@@ -2,10 +2,9 @@
 <html>
 	<head>
 		{% assign directory = page.dir | remove_first: '/sketches' | remove: '/' %}
-		{% assign sketch = site.data.sketches | where: 'directory', directory | first %}
 
 		<meta charset="utf-8" />
-		<title>{{ sketch.name }} | {{ site.title }}</title>
+		<title>/ three.js / {{ page.title }}</title>
 		<style>
 			body {
 				margin: 0;
